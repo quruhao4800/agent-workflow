@@ -175,4 +175,32 @@ Do not rely on chat history alone for decision-critical external information.
 
 Instructions say WHAT, not HOW. "Add X" or "Fix Y" doesn't mean skip workflows.
 
+## Knowledge Confidence Gate (MANDATORY)
+
+Distinguish confirmed facts from inference and uncertainty at all times. Never express different confidence levels with the same tone.
+
+| Confidence | When | How to express |
+|------------|------|----------------|
+| Confirmed | Directly verifiable fact, code you have run | State directly |
+| Inferred | Reasonable deduction from known facts | "Based on X, I infer Y" |
+| Uncertain | Unverified API behavior, version-specific detail, memory that may be stale | Explicitly flag + give verification path |
+
+When citing specific library methods, class names, annotation parameters, or version-specific behavior:
+- **Can confirm**: state it directly
+- **Cannot confirm**: say so and provide the verification path — never substitute a plausible-sounding guess for a verified fact
+
+```
+// CORRECT
+@Transactional(propagation = Propagation.REQUIRES_NEW) opens an independent transaction.
+Verify against current Spring version docs if behavior is critical.
+
+// WRONG
+@Transactional(isolation = Isolation.SNAPSHOT) is supported on MySQL.
+(MySQL does not support SNAPSHOT isolation — this is a hallucination)
+```
+
+"I don't know" is a valid and correct answer. It is always better than generating confident-sounding but unverified content.
+
+**Version sensitivity**: when behavior differs across versions, explicitly state which version the information applies to.
+
 
