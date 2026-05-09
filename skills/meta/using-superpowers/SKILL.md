@@ -164,11 +164,27 @@ Minimum fields for each entry:
 
 ## External Research Persistence Gate
 
+### Step 1 — Check local index before any web search
+
+Before searching the web, check `docs/research-index.md` in the current project root:
+
+- **File does not exist** → skip, proceed to web search.
+- **File exists, topic matches** → read the linked `06-research-notes.md` first. If the finding is still current (check `Verified` date and `Recheck Needed` field), use it directly without web search.
+- **File exists, no match** → proceed to web search.
+
+### Step 2 — Persist new findings
+
 When using web search or external documents for task decisions:
 
 1. Persist findings in `docs/plans/YYYY-MM-DD-<feature-name>/06-research-notes.md`.
 2. Include: `Question`, `Source`, `Retrieved At`, `Key Findings`, `Decision Impact`, `Recheck Needed`.
-3. If the insight is cross-project reusable, also add a distilled prevention/action entry to `docs/memory/global-mistakes.md` when relevant.
+3. Add one row to `docs/research-index.md` (create the file if absent, using the template format):
+
+   | Keywords | Feature folder | Verified | Finding |
+   |----------|---------------|----------|---------|
+   | [searchable topic keywords] | docs/plans/YYYY-MM-DD-feature/ | YYYY-MM-DD | [one-line summary of key finding] |
+
+4. If the insight is cross-project reusable, also add a distilled prevention/action entry to `docs/memory/global-mistakes.md` when relevant.
 
 Do not rely on chat history alone for decision-critical external information.
 ## User Instructions
