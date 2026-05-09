@@ -18,6 +18,17 @@ Task tool (general-purpose):
 
     ## Before You Begin
 
+    **Step 1 — Load project rules (MANDATORY, do this first):**
+    Search for and read all of the following that exist in the working directory:
+    - `rules/**/*.md`
+    - `.claude/rules/**/*.md`
+    - `docs/rules/**/*.md`
+    - `CLAUDE.md`, `AGENTS.md` (project root)
+
+    These rules take precedence over any generic defaults. Apply them for the entire task.
+    Output: "Loaded N rules files from [paths]." before proceeding.
+
+    **Step 2 — Raise questions before starting:**
     If you have questions about:
     - The requirements or acceptance criteria
     - The approach or implementation strategy
