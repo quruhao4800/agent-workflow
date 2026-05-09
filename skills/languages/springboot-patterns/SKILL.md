@@ -1,314 +1,451 @@
 ---
 name: springboot-patterns
 description: Spring Boot architecture patterns, REST API design, layered services, data access, caching, async processing, and logging. Use for Java Spring Boot backend work.
-origin: ECC
 ---
 
 # Spring Boot Development Patterns
 
-Spring Boot architecture and API patterns for scalable, production-grade services.
+## Tech Stack Detection (MANDATORY — run before applying any pattern)
 
-## When to Activate
+Read `build.gradle` (or `pom.xml`) and identify:
 
-- Building REST APIs with Spring MVC or WebFlux
-- Structuring controller → service → repository layers
-- Configuring Spring Data JPA, caching, or async processing
-- Adding validation, exception handling, or pagination
-- Setting up profiles for dev/staging/production environments
-- Implementing event-driven patterns with Spring Events or Kafka
+| What to look for | Detected value | Section to apply |
+|-----------------|---------------|-----------------|
+| `mybatis-plus-boot-starter` / `mybatis-plus` | MyBatis Plus | → [Data Access: MyBatis Plus] |
+| `spring-boot-starter-data-jpa` | Spring Data JPA | → [Data Access: Spring Data JPA] |
+| `sourceCompatibility` / `languageVersion` ≥ 16 | Java 16+ | → DTO: use `record` |
+| `sourceCompatibility` / `languageVersion` < 16 | Java 11–15 | → DTO: use `@Data` class |
 
-## REST API Structure
+If both ORMs are present, or neither is found, ask the user which to use before proceeding.
+
+Output: `"Detected: [ORM], Java [version]. Applying [ORM] data access patterns and [record|@Data] DTO style."`
+
+---
+
+## Controller Layer (universal)
 
 ```java
 @RestController
-@RequestMapping("/api/markets")
-@Validated
-class MarketController {
-  private final MarketService marketService;
+@RequestMapping("/api/users")
+@RequiredArgsConstructor
+public class UserController {
 
-  MarketController(MarketService marketService) {
-    this.marketService = marketService;
-  }
+    private final UserService userService;
 
-  @GetMapping
-  ResponseEntity<Page<MarketResponse>> list(
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "20") int size) {
-    Page<Market> markets = marketService.list(PageRequest.of(page, size));
-    return ResponseEntity.ok(markets.map(MarketResponse::from));
-  }
+    @GetMapping("/{id}")
+    public BaseResp<UserResponse> getById(@PathVariable Long id) {
+        return BaseResp.ok(userService.getById(id));
+    }
 
-  @PostMapping
-  ResponseEntity<MarketResponse> create(@Valid @RequestBody CreateMarketRequest request) {
-    Market market = marketService.create(request);
-    return ResponseEntity.status(HttpStatus.CREATED).body(MarketResponse.from(market));
-  }
+    @PostMapping
+    public BaseResp<UserResponse> create(@Valid @RequestBody CreateUserRequest request) {
+        return BaseResp.ok(userService.create(request));
+    }
+
+    @GetMapping
+    public BaseResp<Page<UserResponse>> list(@Valid PageRequest request) {
+        return BaseResp.ok(userService.list(request));
+    }
 }
 ```
 
-## Repository Pattern (Spring Data JPA)
+Rules:
+- `@RequiredArgsConstructor` (Lombok) for constructor injection — never `@Autowired` on fields
+- `@Valid` on every `@RequestBody` and `@ModelAttribute` param — without it, bean validation annotations on the DTO do not fire
+- Controller delegates immediately to Service — no business logic, no conversion here
+- Return uniform response envelope (`BaseResp` or equivalent defined in the project)
 
-```java
-public interface MarketRepository extends JpaRepository<MarketEntity, Long> {
-  @Query("select m from MarketEntity m where m.status = :status order by m.volume desc")
-  List<MarketEntity> findActive(@Param("status") MarketStatus status, Pageable pageable);
-}
-```
+---
 
-## Service Layer with Transactions
+## Service Layer (universal)
 
 ```java
 @Service
-public class MarketService {
-  private final MarketRepository repo;
+@RequiredArgsConstructor
+public class UserServiceImpl implements UserService {
 
-  public MarketService(MarketRepository repo) {
-    this.repo = repo;
-  }
+    private final UserMapper userMapper;      // MyBatis Plus — or UserRepository for JPA
 
-  @Transactional
-  public Market create(CreateMarketRequest request) {
-    MarketEntity entity = MarketEntity.from(request);
-    MarketEntity saved = repo.save(entity);
-    return Market.from(saved);
-  }
+    @Override
+    @Transactional(readOnly = true)
+    public UserResponse getById(Long id) {
+        UserDO user = userMapper.selectById(id);
+        if (user == null) {
+            throw new BusinessException("User not found: " + id);
+        }
+        return UserConverter.toResponse(user);
+    }
+
+    @Override
+    @Transactional
+    public UserResponse create(CreateUserRequest request) {
+        UserDO user = UserDO.create(request.getName(), request.getEmail());
+        userMapper.insert(user);
+        return UserConverter.toResponse(user);
+    }
 }
 ```
+
+Rules:
+- `@Transactional(readOnly = true)` on pure query methods
+- `@Transactional` on all write methods
+- **Never** put `@Transactional` on `private` methods — Spring AOP proxy cannot intercept them
+- Object conversion is done via `XxxConverter` static methods — not inline in Service
+- Entity DO creation via static factory `XxxDO.create(...)` — not Builder, not direct `new` + setters
+
+---
 
 ## DTOs and Validation
 
-```java
-public record CreateMarketRequest(
-    @NotBlank @Size(max = 200) String name,
-    @NotBlank @Size(max = 2000) String description,
-    @NotNull @FutureOrPresent Instant endDate,
-    @NotEmpty List<@NotBlank String> categories) {}
+### Java 11–15 (use @Data class)
 
-public record MarketResponse(Long id, String name, MarketStatus status) {
-  static MarketResponse from(Market market) {
-    return new MarketResponse(market.id(), market.name(), market.status());
-  }
+```java
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class CreateUserRequest {
+    @NotBlank
+    @Size(max = 100)
+    private String name;
+
+    @NotBlank
+    @Email
+    private String email;
+}
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserResponse {
+    private Long id;
+    private String name;
+    private String email;
 }
 ```
 
-## Exception Handling
+### Java 16+ (use record)
+
+```java
+public record CreateUserRequest(
+    @NotBlank @Size(max = 100) String name,
+    @NotBlank @Email String email) {}
+
+public record UserResponse(Long id, String name, String email) {}
+```
+
+---
+
+## Converter Layer (universal)
+
+```java
+public class UserConverter {
+
+    public static UserResponse toResponse(UserDO user) {
+        return UserResponse.builder()
+            .id(user.getId())
+            .name(user.getName())
+            .email(user.getEmail())
+            .build();
+    }
+
+    public static UserDO toDO(CreateUserRequest request) {
+        return UserDO.create(request.getName(), request.getEmail());
+    }
+}
+```
+
+Rules:
+- All static methods — no Spring bean injection
+- Named `XxxConverter`, placed in `convert` package
+- Service calls `UserConverter.toResponse(entity)` — never maps fields inline
+
+---
+
+## Exception Handling (universal)
 
 ```java
 @ControllerAdvice
-class GlobalExceptionHandler {
-  @ExceptionHandler(MethodArgumentNotValidException.class)
-  ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex) {
-    String message = ex.getBindingResult().getFieldErrors().stream()
-        .map(e -> e.getField() + ": " + e.getDefaultMessage())
-        .collect(Collectors.joining(", "));
-    return ResponseEntity.badRequest().body(ApiError.validation(message));
-  }
+@Slf4j
+public class GlobalExceptionHandler {
 
-  @ExceptionHandler(AccessDeniedException.class)
-  ResponseEntity<ApiError> handleAccessDenied() {
-    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiError.of("Forbidden"));
-  }
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<BaseResp<Void>> handleBusiness(BusinessException ex) {
+        log.warn("Business error: {}", ex.getMessage());
+        return ResponseEntity.badRequest()
+            .body(BaseResp.fail(ex.getCode(), ex.getMessage()));
+    }
 
-  @ExceptionHandler(Exception.class)
-  ResponseEntity<ApiError> handleGeneric(Exception ex) {
-    // Log unexpected errors with stack traces
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body(ApiError.of("Internal server error"));
-  }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<BaseResp<Void>> handleValidation(MethodArgumentNotValidException ex) {
+        String message = ex.getBindingResult().getFieldErrors().stream()
+            .map(e -> e.getField() + ": " + e.getDefaultMessage())
+            .collect(Collectors.joining(", "));
+        return ResponseEntity.badRequest()
+            .body(BaseResp.fail("INVALID_PARAM", message));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<BaseResp<Void>> handleGeneric(Exception ex) {
+        log.error("Unexpected error", ex);
+        return ResponseEntity.internalServerError()
+            .body(BaseResp.fail("INTERNAL_ERROR", "Internal server error"));
+    }
 }
 ```
 
-## Caching
+---
 
-Requires `@EnableCaching` on a configuration class.
+## Data Access Layer — MyBatis Plus (apply only if detected)
 
 ```java
-@Service
-public class MarketCacheService {
-  private final MarketRepository repo;
+// Mapper interface
+@Mapper
+public interface UserMapper extends BaseMapper<UserDO> {
+    // Simple CRUD: inherited from BaseMapper — no extra code needed
 
-  public MarketCacheService(MarketRepository repo) {
-    this.repo = repo;
-  }
-
-  @Cacheable(value = "market", key = "#id")
-  public Market getById(Long id) {
-    return repo.findById(id)
-        .map(Market::from)
-        .orElseThrow(() -> new EntityNotFoundException("Market not found"));
-  }
-
-  @CacheEvict(value = "market", key = "#id")
-  public void evict(Long id) {}
+    // Complex query: define here, implement in XML
+    List<UserDO> selectActiveByDept(@Param("deptId") Long deptId,
+                                     @Param("page") Page<UserDO> page);
 }
 ```
 
-## Async Processing
+```xml
+<!-- resources/mapper/UserMapper.xml -->
+<mapper namespace="com.example.mapper.UserMapper">
+    <select id="selectActiveByDept" resultType="com.example.entity.UserDO">
+        SELECT * FROM user
+        WHERE dept_id = #{deptId}
+          AND status = 'ACTIVE'
+        ORDER BY created_at DESC
+    </select>
+</mapper>
+```
 
-Requires `@EnableAsync` on a configuration class.
+```java
+// Common patterns
+// Single record
+UserDO user = userMapper.selectById(id);
+
+// Condition query
+List<UserDO> users = userMapper.selectList(
+    new LambdaQueryWrapper<UserDO>()
+        .eq(UserDO::getStatus, UserStatus.ACTIVE)
+        .orderByDesc(UserDO::getCreatedAt)
+);
+
+// Paginated query
+Page<UserDO> page = userMapper.selectPage(
+    new Page<>(pageNum, pageSize),
+    new LambdaQueryWrapper<UserDO>().eq(UserDO::getDeptId, deptId)
+);
+
+// Batch read — NEVER loop selectById
+List<UserDO> users = userMapper.selectBatchIds(ids);
+
+// Update via business method + updateById
+user.activate();
+userMapper.updateById(user);
+```
+
+Rules:
+- Simple CRUD: use `BaseMapper` inherited methods
+- Condition queries: use `LambdaQueryWrapper` (type-safe, refactor-safe)
+- Complex multi-join or aggregation: XML mapper only — never inline SQL in `@Select` annotation
+- List endpoints: always `selectPage` — never `selectList` without a limit
+- Batch reads: `selectBatchIds(ids)` — never loop `selectById` (N+1)
+- Never use `${}` in XML — always `#{}`
+
+---
+
+## Data Access Layer — Spring Data JPA (apply only if detected)
+
+```java
+// Repository interface
+public interface UserRepository extends JpaRepository<UserDO, Long> {
+
+    // Simple finders: Spring Data derives query from method name
+    List<UserDO> findByDeptIdAndStatus(Long deptId, UserStatus status);
+
+    // Complex query: use @Query with JPQL
+    @Query("SELECT u FROM UserDO u WHERE u.deptId = :deptId AND u.status = 'ACTIVE' ORDER BY u.createdAt DESC")
+    Page<UserDO> findActiveByDept(@Param("deptId") Long deptId, Pageable pageable);
+}
+```
+
+```java
+// Common patterns
+// Single record
+UserDO user = userRepository.findById(id)
+    .orElseThrow(() -> new BusinessException("User not found: " + id));
+
+// Paginated query
+Page<UserDO> page = userRepository.findActiveByDept(
+    deptId, PageRequest.of(pageNum, pageSize, Sort.by("createdAt").descending())
+);
+
+// Batch read
+List<UserDO> users = userRepository.findAllById(ids);
+
+// Save (insert or update)
+UserDO saved = userRepository.save(user);
+```
+
+Rules:
+- Use method-name queries for simple conditions
+- Use `@Query` (JPQL) for joins and aggregations
+- Always use `Pageable` on list queries — never return `List<T>` from user-facing endpoints
+- `findById` returns `Optional<T>` — always handle the empty case explicitly
+
+---
+
+## Caching (universal)
+
+Requires `@EnableCaching` on a `@Configuration` class.
 
 ```java
 @Service
+@RequiredArgsConstructor
+@Slf4j
+public class UserCacheService {
+
+    private final UserMapper userMapper;  // or UserRepository
+
+    @Cacheable(value = "user", key = "#id")
+    @Transactional(readOnly = true)
+    public UserResponse getById(Long id) {
+        UserDO user = userMapper.selectById(id);
+        if (user == null) throw new BusinessException("User not found: " + id);
+        return UserConverter.toResponse(user);
+    }
+
+    @CacheEvict(value = "user", key = "#id")
+    public void evict(Long id) {
+        log.debug("Cache evicted for user {}", id);
+    }
+}
+```
+
+Cache-aside rule: write to DB first, evict/update cache after. Cache failure on write must throw to trigger DB rollback.
+
+---
+
+## Async Processing (universal)
+
+Requires `@EnableAsync` on a `@Configuration` class.
+
+```java
+@Service
+@Slf4j
 public class NotificationService {
-  @Async
-  public CompletableFuture<Void> sendAsync(Notification notification) {
-    // send email/SMS
-    return CompletableFuture.completedFuture(null);
-  }
+
+    @Async
+    public CompletableFuture<Void> sendAsync(Long userId, String message) {
+        log.info("Sending notification to user {}", userId);
+        // send email / push / SMS
+        return CompletableFuture.completedFuture(null);
+    }
 }
 ```
 
-## Logging (SLF4J)
+Rule: publish async calls **after** the enclosing `@Transactional` method commits — never inside the transaction, as rollback cannot cancel an already-dispatched async task.
+
+---
+
+## Logging (universal)
 
 ```java
 @Service
-public class ReportService {
-  private static final Logger log = LoggerFactory.getLogger(ReportService.class);
+@Slf4j  // Lombok — generates: private static final Logger log = LoggerFactory.getLogger(...)
+public class OrderService {
 
-  public Report generate(Long marketId) {
-    log.info("generate_report marketId={}", marketId);
-    try {
-      // logic
-    } catch (Exception ex) {
-      log.error("generate_report_failed marketId={}", marketId, ex);
-      throw ex;
+    public OrderResponse process(Long orderId) {
+        log.info("Processing order {}", orderId);
+        try {
+            // business logic
+        } catch (BusinessException ex) {
+            log.warn("Order {} rejected: {}", orderId, ex.getMessage());
+            throw ex;
+        } catch (Exception ex) {
+            log.error("Order {} failed unexpectedly", orderId, ex);
+            throw ex;
+        }
+        log.info("Order {} completed", orderId);
+        return result;
     }
-    return new Report();
-  }
 }
 ```
 
-## Middleware / Filters
+Rules:
+- Use `@Slf4j` (Lombok) — never `LoggerFactory.getLogger()` manually
+- Use parameterized logging: `log.info("user={}", id)` — never string concatenation
+- Never log inside a loop at INFO or above — log summary before/after
+- Never log passwords, tokens, or PII
+
+---
+
+## Scheduled Jobs (universal)
 
 ```java
 @Component
-public class RequestLoggingFilter extends OncePerRequestFilter {
-  private static final Logger log = LoggerFactory.getLogger(RequestLoggingFilter.class);
+@Slf4j
+public class DailyReportJob {
 
-  @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-      FilterChain filterChain) throws ServletException, IOException {
-    long start = System.currentTimeMillis();
-    try {
-      filterChain.doFilter(request, response);
-    } finally {
-      long duration = System.currentTimeMillis() - start;
-      log.info("req method={} uri={} status={} durationMs={}",
-          request.getMethod(), request.getRequestURI(), response.getStatus(), duration);
+    private final ReportService reportService;
+
+    @Scheduled(cron = "0 0 2 * * ?")  // 02:00 daily
+    public void run() {
+        log.info("DailyReportJob started");
+        try {
+            reportService.generate();
+        } catch (Exception ex) {
+            log.error("DailyReportJob failed", ex);
+            // scheduled jobs: log and continue — do not propagate
+        }
+        log.info("DailyReportJob completed");
     }
-  }
 }
 ```
 
-## Pagination and Sorting
+Rules:
+- Always catch and log exceptions — let the scheduler reschedule normally
+- Use a distributed lock (Redis / ShedLock) to prevent concurrent execution across instances
+- Cross-tenant or system-level queries must bypass tenant filters
+
+---
+
+## External Call Resilience (universal)
 
 ```java
-PageRequest page = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
-Page<Market> results = marketService.list(page);
-```
-
-## Error-Resilient External Calls
-
-```java
-public <T> T withRetry(Supplier<T> supplier, int maxRetries) {
-  int attempts = 0;
-  while (true) {
-    try {
-      return supplier.get();
-    } catch (Exception ex) {
-      attempts++;
-      if (attempts >= maxRetries) {
-        throw ex;
-      }
-      try {
-        Thread.sleep((long) Math.pow(2, attempts) * 100L);
-      } catch (InterruptedException ie) {
-        Thread.currentThread().interrupt();
-        throw ex;
-      }
+public <T> T withRetry(Supplier<T> call, int maxAttempts) {
+    int attempt = 0;
+    while (true) {
+        try {
+            return call.get();
+        } catch (Exception ex) {
+            attempt++;
+            if (attempt >= maxAttempts) throw ex;
+            long backoffMs = (long) Math.pow(2, attempt) * 100L;
+            try { Thread.sleep(backoffMs); } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+                throw ex;
+            }
+        }
     }
-  }
 }
 ```
 
-## Rate Limiting (Filter + Bucket4j)
+For Feign clients: configure `Retryer`, `ErrorDecoder`, and `connectTimeout` / `readTimeout` explicitly. Never rely on defaults in production.
 
-**Security Note**: The `X-Forwarded-For` header is untrusted by default because clients can spoof it.
-Only use forwarded headers when:
-1. Your app is behind a trusted reverse proxy (nginx, AWS ALB, etc.)
-2. You have registered `ForwardedHeaderFilter` as a bean
-3. You have configured `server.forward-headers-strategy=NATIVE` or `FRAMEWORK` in application properties
-4. Your proxy is configured to overwrite (not append to) the `X-Forwarded-For` header
+---
 
-When `ForwardedHeaderFilter` is properly configured, `request.getRemoteAddr()` will automatically
-return the correct client IP from the forwarded headers. Without this configuration, use
-`request.getRemoteAddr()` directly—it returns the immediate connection IP, which is the only
-trustworthy value.
+## Production Defaults (universal)
 
-```java
-@Component
-public class RateLimitFilter extends OncePerRequestFilter {
-  private final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
+- Constructor injection everywhere (`@RequiredArgsConstructor`) — no field `@Autowired`
+- `@Transactional(readOnly = true)` on all Service query methods
+- Configure HikariCP pool size and connection timeout explicitly
+- Structured logging (JSON) for production via Logback encoder
+- Sensitive config (passwords, tokens, API keys) via environment variables — never hardcoded
 
-  /*
-   * SECURITY: This filter uses request.getRemoteAddr() to identify clients for rate limiting.
-   *
-   * If your application is behind a reverse proxy (nginx, AWS ALB, etc.), you MUST configure
-   * Spring to handle forwarded headers properly for accurate client IP detection:
-   *
-   * 1. Set server.forward-headers-strategy=NATIVE (for cloud platforms) or FRAMEWORK in
-   *    application.properties/yaml
-   * 2. If using FRAMEWORK strategy, register ForwardedHeaderFilter:
-   *
-   *    @Bean
-   *    ForwardedHeaderFilter forwardedHeaderFilter() {
-   *        return new ForwardedHeaderFilter();
-   *    }
-   *
-   * 3. Ensure your proxy overwrites (not appends) the X-Forwarded-For header to prevent spoofing
-   * 4. Configure server.tomcat.remoteip.trusted-proxies or equivalent for your container
-   *
-   * Without this configuration, request.getRemoteAddr() returns the proxy IP, not the client IP.
-   * Do NOT read X-Forwarded-For directly—it is trivially spoofable without trusted proxy handling.
-   */
-  @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-      FilterChain filterChain) throws ServletException, IOException {
-    // Use getRemoteAddr() which returns the correct client IP when ForwardedHeaderFilter
-    // is configured, or the direct connection IP otherwise. Never trust X-Forwarded-For
-    // headers directly without proper proxy configuration.
-    String clientIp = request.getRemoteAddr();
-
-    Bucket bucket = buckets.computeIfAbsent(clientIp,
-        k -> Bucket.builder()
-            .addLimit(Bandwidth.classic(100, Refill.greedy(100, Duration.ofMinutes(1))))
-            .build());
-
-    if (bucket.tryConsume(1)) {
-      filterChain.doFilter(request, response);
-    } else {
-      response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-    }
-  }
-}
-```
-
-## Background Jobs
-
-Use Spring’s `@Scheduled` or integrate with queues (e.g., Kafka, SQS, RabbitMQ). Keep handlers idempotent and observable.
-
-## Observability
-
-- Structured logging (JSON) via Logback encoder
-- Metrics: Micrometer + Prometheus/OTel
-- Tracing: Micrometer Tracing with OpenTelemetry or Brave backend
-
-## Production Defaults
-
-- Prefer constructor injection, avoid field injection
-- Enable `spring.mvc.problemdetails.enabled=true` for RFC 7807 errors (Spring Boot 3+)
-- Configure HikariCP pool sizes for workload, set timeouts
-- Use `@Transactional(readOnly = true)` for queries
-- Enforce null-safety via `@NonNull` and `Optional` where appropriate
-
-**Remember**: Keep controllers thin, services focused, repositories simple, and errors handled centrally. Optimize for maintainability and testability.
+**Remember**: thin controllers, focused services, ORM-appropriate data access, central error handling.
