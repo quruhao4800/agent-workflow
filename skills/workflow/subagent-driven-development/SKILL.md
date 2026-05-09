@@ -1,6 +1,6 @@
 ---
 name: subagent-driven-development
-description: Use when executing implementation plans with independent tasks in the current session
+description: Use when executing implementation plans with many tasks or large file impact. Also invoked automatically when executing-plans detects the plan exceeds its threshold (>5 tasks or any task touches >3 files).
 ---
 
 # Subagent-Driven Development
@@ -17,9 +17,11 @@ If `03-implementation-plan.md` already has tasks with status other than `pending
 
 1. Read all task statuses.
 2. `completed` → skip entirely, do not re-implement.
-3. `in_progress` → the implementer was interrupted mid-review. **Do not re-implement.** Run spec review and quality review immediately on the existing output. If reviews pass, mark `completed`. If reviews fail, dispatch implementer to fix only the flagged issues.
+3. `in_progress` → check whether the implementer produced any code output (look for commits or file changes since the task was marked `in_progress`):
+   - **Code exists** → interrupted mid-review. Do not re-implement. Run spec review and quality review on the existing output. If reviews pass, mark `completed`. If reviews fail, dispatch implementer to fix only the flagged issues.
+   - **No code exists** → interrupted before implementer finished. Treat as `pending` and dispatch implementer normally.
 4. `pending` → enter normal dispatch flow.
-5. Announce: `"Resuming plan. Completed: N | In-progress: M (review-only) | Pending: K."`
+5. Announce: `"Resuming plan. Completed: N | In-progress (review-only): M | In-progress (re-dispatch): L | Pending: K."`
 
 ## Preflight (MANDATORY)
 
