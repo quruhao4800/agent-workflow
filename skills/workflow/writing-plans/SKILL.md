@@ -5,6 +5,13 @@ description: Use when you have a spec or requirements for a multi-step task, bef
 
 # Writing Plans
 
+## Prerequisites
+
+| From skill | Must already exist | If missing |
+|------------|--------------------|------------|
+| `brainstorming` | `docs/plans/YYYY-MM-DD-<feature>/01-requirements.md` with `Status: Approved` | Return to `brainstorming` — do not start planning without approved requirements |
+| `brainstorming` | `05-change-log.md` if any CR was raised during brainstorming | Initialize it here if absent |
+
 ## Overview
 
 Write implementation plans that are executable, traceable, and safe for mid-flight requirement changes.

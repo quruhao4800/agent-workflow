@@ -5,6 +5,14 @@ description: Use when implementation is complete, all tests pass, and you need t
 
 # Finishing a Development Branch
 
+## Prerequisites
+
+| From skill | Must already exist | If missing |
+|------------|--------------------|------------|
+| `verification-before-completion` | All gates passed (unmapped_req = 0, open_cr = 0, open_dr = 0, pending_recheck = 0) | Return to `verification-before-completion` |
+| `verification-before-completion` | `04-verification.md` Status = Complete | Return to `verification-before-completion` |
+| `executing-plans` | All tasks `completed`, no tasks `in_progress` | Return to `executing-plans` |
+
 ## Overview
 
 Verify technical checks and requirement closure first, then present integration options.

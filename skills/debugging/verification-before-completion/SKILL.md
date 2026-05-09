@@ -5,6 +5,13 @@ description: Use when about to claim work is complete, fixed, or passing, before
 
 # Verification Before Completion
 
+## Prerequisites
+
+| From skill | Must already exist | If missing |
+|------------|--------------------|------------|
+| `executing-plans` | All tasks in `03-implementation-plan.md` marked `completed` | Return to `executing-plans` — verification cannot start with open tasks |
+| `executing-plans` | `04-verification.md` updated with evidence for each completed task | Return to `executing-plans` to fill evidence before running gates here |
+
 ## Overview
 
 Claims require evidence. No completion claim is valid without fresh verification outputs.
@@ -74,6 +81,47 @@ If coverage is below threshold, add missing tests before claiming completion.
 - `04-verification.md` updated
 - No open blocking mistakes in `99-mistake-log.md`
 - No open `CR-###` or `DR-###` in `05-change-log.md`
+
+## Evidence Templates by Task Type
+
+Before completing the Minimum Checklist, confirm the evidence matches the task type:
+
+### code-task
+- Test run stdout: all tests passed (`BUILD SUCCESSFUL`, `Tests run: N, Failures: 0, Errors: 0`)
+- JaCoCo coverage summary: Service ≥ 85%, Controller ≥ 80%, Overall ≥ 80%
+  - Command: `./gradlew test jacocoTestReport`
+  - Report: `build/reports/jacoco/test/html/index.html`
+- If the task adds or modifies an API endpoint: include an actual HTTP request + response (status code + body)
+
+### migration-task
+- Flyway run log: `Successfully applied N migration(s) to schema`
+- Schema state after migration: output of `DESCRIBE <table>` or `SHOW CREATE TABLE <table>` showing expected columns and indexes
+- Rollback test: run rollback migration and confirm schema returns to pre-migration state (show output)
+
+### config-task
+- Application startup log showing configuration loaded without errors
+- Functional smoke test output confirming the affected behavior works
+- If multi-environment: list which environments the change has been applied to
+
+### api-endpoint (supplement to code-task)
+Provide all three:
+```
+# Success path
+Request:  POST /api/xxx
+Body:     {"field": "value"}
+Response: HTTP 200 {"code": 0, "data": {...}}
+
+# Error path
+Request:  POST /api/xxx
+Body:     {"field": ""}
+Response: HTTP 400 {"code": "INVALID_PARAM", "message": "..."}
+
+# Auth rejection (if endpoint is protected)
+Request:  POST /api/xxx (no token)
+Response: HTTP 401
+```
+
+"It should work" or "tests cover this" is not evidence. Paste actual output.
 
 ## Red Flags
 

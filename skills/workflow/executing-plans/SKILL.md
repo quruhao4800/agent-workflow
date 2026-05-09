@@ -5,6 +5,15 @@ description: Use when you have a written implementation plan to execute in a sep
 
 # Executing Plans
 
+## Prerequisites
+
+| From skill | Must already exist | If missing |
+|------------|--------------------|------------|
+| `writing-plans` | `02-design.md` with `Status: Approved` | Return to `writing-plans` Phase 1 — do not implement against unapproved design |
+| `writing-plans` | `03-implementation-plan.md` with at least one `pending` task | Return to `writing-plans` Phase 2 |
+| `writing-plans` | `04-verification.md` skeleton initialized | Initialize it now using the template in `writing-plans` |
+| `writing-plans` | `99-mistake-log.md` | Initialize as empty file if absent |
+
 ## Overview
 
 Load plan artifacts, execute tasks in batches, and stop immediately when requirements drift.
