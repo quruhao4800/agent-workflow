@@ -14,6 +14,19 @@ description: Use when you have a written implementation plan to execute in a sep
 | `writing-plans` | `04-verification.md` skeleton initialized | Initialize it now using the template in `writing-plans` |
 | `writing-plans` | `99-mistake-log.md` | Initialize as empty file if absent |
 
+## Execution Mode Selection (MANDATORY — before anything else)
+
+Read `03-implementation-plan.md`. Count tasks by status and estimate per-task file impact from the `Files` / `Impact` field.
+
+| Condition | Decision |
+|-----------|----------|
+| Pending tasks ≤ 5 **AND** every task touches ≤ 3 files | ✅ Continue with `executing-plans` (this skill) |
+| Pending tasks > 5 **OR** any task touches > 3 files | 🔄 Switch to `quruhao-skills:subagent-driven-development` |
+
+Announce: `"Mode: executing-plans — N pending tasks, max M files per task."` or `"Switching to subagent-driven-development — reason: [N tasks / task X touches M files]."`
+
+**Why this matters:** `executing-plans` runs entirely in the main context. As tasks accumulate, context grows and output quality drops. `subagent-driven-development` gives each task a fresh context, preventing contamination across tasks.
+
 ## Overview
 
 Load plan artifacts, execute tasks in batches, and stop immediately when requirements drift.

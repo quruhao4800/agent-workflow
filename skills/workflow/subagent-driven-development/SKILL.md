@@ -11,6 +11,16 @@ Execute one planned task at a time with a fresh implementer subagent, then two r
 
 Fresh subagent per task + strict traceability + two-stage review.
 
+## RESUME Mode (when session was interrupted)
+
+If `03-implementation-plan.md` already has tasks with status other than `pending`, a prior session was interrupted. Do not start from scratch.
+
+1. Read all task statuses.
+2. `completed` → skip entirely, do not re-implement.
+3. `in_progress` → the implementer was interrupted mid-review. **Do not re-implement.** Run spec review and quality review immediately on the existing output. If reviews pass, mark `completed`. If reviews fail, dispatch implementer to fix only the flagged issues.
+4. `pending` → enter normal dispatch flow.
+5. Announce: `"Resuming plan. Completed: N | In-progress: M (review-only) | Pending: K."`
+
 ## Preflight (MANDATORY)
 
 **Step 0:** Load project rules: read all files matching `rules/**/*.md`. Apply them for the entire session.
@@ -26,6 +36,21 @@ Load artifacts from one feature folder before dispatching any subagent:
 - `06-research-notes.md` (if present)
 
 Build a task list from `03-implementation-plan.md` and include `REQ-###`/`CR-###`/`DR-###` mapping per task.
+
+## Parallel Task Identification (after Preflight)
+
+Before dispatching any implementer, scan the full task list for parallelism opportunities:
+
+1. Find the **ready set**: tasks whose `Depends on` lists are fully `completed`.
+2. Within the ready set, group tasks that have **no shared file targets** and **no shared DB table modifications**.
+3. Tasks in the same group may be dispatched in parallel — send multiple implementer subagents in a single message.
+4. Tasks with shared files or tables must remain sequential even if dependencies are met.
+
+Announce: `"Ready set: [Task A, B, C]. Parallel groups: [[A, C], [B] (sequential — shared file XxxMapper.xml)]."`
+
+**Parallel review:** each parallel implementer completes its own spec review and quality review independently. If one implementer's review fails, the others continue uninterrupted. The failed task returns to `in_progress` for targeted fixes only.
+
+**When not to parallelize:** if you cannot confidently determine the file/table overlap from the plan, default to sequential. Incorrect parallelism with overlapping writes causes merge conflicts and is harder to recover from than sequential slowness.
 
 ## Per-Task Flow
 
