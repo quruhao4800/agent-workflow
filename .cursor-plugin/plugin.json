@@ -1,0 +1,12 @@
+{
+  "name": "quruhao-skills",
+  "displayName": "quruhao-skills",
+  "description": "AI development workflow with process discipline and language expertise",
+  "version": "1.0.0",
+  "license": "MIT",
+  "keywords": ["skills", "tdd", "debugging", "collaboration", "best-practices", "workflows"],
+  "skills": "./skills/",
+  "agents": "./agents/",
+  "commands": "./commands/",
+  "hooks": "./hooks/hooks.json"
+}
