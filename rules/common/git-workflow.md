@@ -10,9 +10,8 @@
 
 ### Rules
 - **Single line only**: one summary sentence, max 72 characters — no body, no bullet list, no multi-line description
-- **Language**: written in English or Chinese, but never mix both
+- **Language**: commit message must be written in English; after committing, explain what was done and why in Chinese to the user
 - **Intent over detail**: describe WHY / WHAT, not which files changed
-- **After committing**: explain the commit in Chinese to the user — one sentence summarizing what was done and why
 
 ### Hook Setup Gate (MANDATORY before any commit)
 
