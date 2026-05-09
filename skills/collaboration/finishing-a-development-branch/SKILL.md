@@ -39,11 +39,32 @@ If the implementation touches any of the following, invoke `quruhao-skills:secur
 
 If none of the above apply, skip this step.
 
-## Step 4: Determine Base Branch
+## Step 4: Verify Commit-msg Hook
+
+Run:
+```bash
+git config core.hookspath
+```
+
+- If a path is returned and the hook file exists → proceed.
+- If not configured → stop and prompt the user:
+
+  > This project has no commit-msg hook. The quruhao-skills repo provides one that enforces conventional commit format.
+  >
+  > Options:
+  > 1. Copy `.githooks/` into this project and configure: `git config core.hookspath .githooks`
+  > 2. Point to quruhao-skills hooks directly: `git config core.hookspath <quruhao-skills-path>/.githooks`
+  > 3. Skip — proceed without hook
+  >
+  > Which do you prefer?
+
+  Execute the user's choice before continuing. If option 3, still enforce single-line conventional commit format manually.
+
+## Step 5: Determine Base Branch
 
 Find base (`main`/`master`) via `git merge-base` and confirm if needed.
 
-## Step 5: Present Options
+## Step 6: Present Options
 
 Present exactly:
 
@@ -52,7 +73,7 @@ Present exactly:
 3. Keep the branch as-is (handle later)
 4. Discard this work
 
-## Step 6: Execute Choice
+## Step 7: Execute Choice
 
 ### Option 1: Merge Locally
 

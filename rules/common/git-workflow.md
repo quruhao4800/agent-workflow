@@ -9,26 +9,39 @@
 - Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
 
 ### Rules
-- **Language**: commit message must be written in English
-- **Length**: `<description>` must be a single summary sentence, max 72 characters — describe the intent, not a list of every changed file or line
+- **Single line only**: one summary sentence, max 72 characters — no body, no bullet list, no multi-line description
+- **Language**: written in English or Chinese, but never mix both
+- **Intent over detail**: describe WHY / WHAT, not which files changed
 - **After committing**: explain the commit in Chinese to the user — one sentence summarizing what was done and why
 
-### Commit-msg Hook
+### Hook Setup Gate (MANDATORY before any commit)
 
-A `commit-msg` hook is in `.githooks/commit-msg`. It auto-normalizes and validates every commit message before it is saved.
+Before running `git commit` in **any project**, check whether the project has a `commit-msg` hook configured:
 
-**First-time setup** (run once per clone):
 ```bash
-git config core.hooksPath .githooks
-chmod +x .githooks/commit-msg
+git config core.hookspath
 ```
 
-The hook will:
-- Convert full-width colons（：）to half-width（:）
-- Lowercase the type automatically
-- Block the commit if the format does not match the regex
+**Decision table:**
 
-Note: Attribution disabled globally via ~/.claude/settings.json.
+| Result | Action |
+|--------|--------|
+| Returns a path (e.g. `.githooks`) and `.githooks/commit-msg` exists | Hook is active — proceed with commit |
+| Empty / not set | Prompt the user (see below) |
+
+**Prompt to user when hook is not configured:**
+
+> This project does not have a commit-msg hook configured.
+> The quruhao-skills repo provides one at `<quruhao-skills-path>/.githooks/commit-msg` that enforces conventional commit format.
+>
+> Options:
+> 1. Copy `.githooks/` into this project and run `git config core.hookspath .githooks`
+> 2. Point directly to the quruhao-skills hooks: `git config core.hookspath <quruhao-skills-path>/.githooks`
+> 3. Skip — proceed without hook
+>
+> Which do you prefer?
+
+If the user chooses option 1 or 2, execute the corresponding commands before committing. If the user chooses option 3, proceed but still apply the commit message format rules manually.
 
 ## Pull Request Workflow
 
