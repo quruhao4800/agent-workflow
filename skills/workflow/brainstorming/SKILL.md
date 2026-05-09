@@ -100,6 +100,44 @@ Before finalizing each REQ, verify:
 - **Deterministic AC**: Acceptance criteria must specify exact values — HTTP status codes, field names, error body shape. Replace vague outcomes ("returns error", "handles correctly") with precise contracts (e.g., `HTTP 400, body: {"code":"INVALID_EMAIL","field":"email"}`).
 - **Agent Execution Context filled**: Entities/tables, external services, and hard constraints are explicitly listed — not left blank or implied.
 
+## Design Self-Review Pass (MANDATORY — run after Cross-REQ Consistency Check, before presenting to user)
+
+Run 3 internal passes. Do NOT present the design to the user until all 3 passes are complete.
+
+### Pass 1 — Template completeness
+For every REQ-###, check that all required template fields are filled (no blanks, no "TBD").
+- `AUTO_FIX`: fill from information already available in this session.
+- `NEEDS_DECISION`: field requires information only the user can provide — add to the decision batch.
+
+### Pass 2 — Cross-REQ consistency
+Check for contradictions, NFR feasibility conflicts, and non-goal conflicts across all requirements.
+- `AUTO_FIX`: contradiction has a clear resolution derivable from context (e.g., one REQ explicitly takes priority, or one version is clearly more restrictive and consistent with stated goals).
+- `NEEDS_DECISION`: genuine trade-off or ambiguity — add to the decision batch.
+
+### Pass 3 — Quality Gate sweep
+Apply the Requirement Quality Gate to every REQ-###.
+- `AUTO_FIX`: rewrite vague or non-deterministic ACs into precise ones where the correct value is derivable from context (e.g., a standard HTTP 400 for validation failure).
+- `NEEDS_DECISION`: requires business knowledge or policy the user must supply — add to the decision batch.
+
+### After all 3 passes
+
+Present to the user exactly once:
+
+```
+## Design Self-Review完成
+
+**已自动修复 (AUTO_FIX):**
+- [brief list of what was fixed]
+
+**需要你决策 (NEEDS_DECISION):**
+1. [issue] — [two options or a concrete question]
+2. ...
+
+请逐条确认或选择，确认后继续进入 Completeness Gate。
+```
+
+If there are zero NEEDS_DECISION items, state that and proceed directly to the Completeness Gate without waiting.
+
 ## Cross-REQ Consistency Check (MANDATORY)
 
 Before requesting approval, check for contradictions across all requirements:
@@ -120,17 +158,18 @@ In `01-requirements.md`:
 
 ## Required Process
 
-1. Load project rules: read all files matching `rules/**/*.md`. Apply them throughout this session.
+1. Load project rules: search and read all files in `rules/**/*.md`, `.claude/rules/**/*.md`, `docs/rules/**/*.md`, `CLAUDE.md`, `AGENTS.md`. Apply them throughout this session.
 2. Identify task type from the list below — this determines which domain questions to ask.
 3. Explore project context (files, docs, recent commits).
-4. Ask clarifying questions using the domain checklist, one at a time.
-5. Capture non-functional requirements (NFR).
+4. Gather ALL clarifying questions from the domain checklist for all identified task types. Present them as a single numbered batch, grouped by topic. Do NOT ask one question per message. Exception: if a follow-up question's answer logically depends on a prior answer, split into at most 2 rounds.
+5. Capture non-functional requirements (NFR) — include in the same question batch when possible.
 6. Propose 2-3 approaches with trade-offs and recommendation.
 7. Draft all REQ-### entries and apply the Requirement Quality Gate to each.
 8. Run Cross-REQ Consistency Check.
-9. Run Requirements Completeness Gate — output proactive completion declaration.
-10. Write approved requirements to `01-requirements.md` with Scope Freeze Declaration.
-11. Transition to `writing-plans` for executable tasks.
+9. Run Design Self-Review Pass — resolve what can be resolved internally, then batch remaining decisions to the user.
+10. Run Requirements Completeness Gate — output proactive completion declaration.
+11. Write approved requirements to `01-requirements.md` with Scope Freeze Declaration.
+12. Transition to `writing-plans` for executable tasks.
 
 ## Task Type Detection
 

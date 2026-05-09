@@ -13,7 +13,24 @@ Load plan artifacts, execute tasks in batches, and stop immediately when require
 
 ## Step 0: Load Project Rules
 
-Read all files matching `rules/**/*.md` and apply them for the entire execution session.
+1. Search for rules files in this order:
+   - `rules/**/*.md`
+   - `.claude/rules/**/*.md`
+   - `docs/rules/**/*.md`
+   - `CLAUDE.md`, `AGENTS.md` (project root)
+
+2. Read all found files.
+
+3. Extract a **Rules Compliance Checklist** from the loaded content. For each rule, classify:
+   - `AUTO_CHECK`: objective and verifiable — naming conventions, required annotations, forbidden imports, file size limits, mandatory fields, banned patterns
+   - `SKIP`: principles or guidelines without a clear pass/fail test (e.g., "prefer clarity", "keep it simple")
+
+4. Output a compact summary:
+   > "Loaded N rules files. Extracted X AUTO_CHECK items, Y items skipped as non-verifiable."
+
+   If no rules files are found: note it and continue without a checklist.
+
+This checklist is used in every task DoD and the Post-Batch Rules Sweep.
 
 ## Step 1: Load And Review Plan Set
 
@@ -52,7 +69,8 @@ For each task:
    - [ ] Error handling complete
    - [ ] All callers in `Impact` handled
    - [ ] `04-verification.md` evidence updated
-   - [ ] Commit message: `type(scope): one-line English summary`
+   - [ ] Commit message: `type(scope): one-line summary`
+   - [ ] Rules compliance: check changed files against AUTO_CHECK items from Step 0 checklist; fix violations before marking complete
 5. Mark task `completed`.
 
 ## Unexpected Situation Protocol (MANDATORY)
@@ -82,12 +100,29 @@ If a new request, adjustment, or optimization appears during execution:
 
 No coding is allowed for unmapped requirements.
 
+## Post-Batch Rules Sweep (MANDATORY before Step 3)
+
+After all tasks in the batch are complete, scan every file changed in this batch against the AUTO_CHECK checklist from Step 0.
+
+**Decision table per violation:**
+
+| Violation type | Action |
+|----------------|--------|
+| Objective, no ambiguity (wrong naming, missing annotation, forbidden import) | AUTO_FIX: fix immediately, note in report |
+| Requires judgment (unclear which rule applies, trade-off involved) | NEEDS_DECISION: collect and present to user as a numbered list |
+
+Do not ask the user about AUTO_FIX items individually — fix them silently and list what was fixed in the batch report.
+
+If the Step 0 checklist is empty (no rules files found), skip this sweep.
+
 ## Step 3: Report Batch
 
 After each batch:
 
 - Show completed tasks
 - Show verification evidence summary
+- List AUTO_FIX rules corrections applied (if any)
+- List NEEDS_DECISION rules findings as a numbered batch (if any) — wait for user response before next batch
 - List any open `CR-###`
 - Say: "Ready for feedback."
 
