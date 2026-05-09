@@ -255,10 +255,12 @@ open build/reports/jacoco/test/html/index.html
 
 | Code Type | Target |
 |-----------|--------|
-| Business logic (Service) | 80%+ |
+| Business logic (Service) | 85%+ |
 | Controllers | 80%+ |
 | Mappers (SQL tested via slice tests) | Exclude generated |
 | Entity business methods | 90%+ |
+
+Per-layer thresholds are enforced via JaCoCo in `rules/common/testing.md`.
 
 ## Test File Organization
 

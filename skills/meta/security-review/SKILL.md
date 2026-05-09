@@ -36,6 +36,7 @@ private static final String DB_PASSWORD = "password123"; // In source code
 private String apiKey;
 
 // Or use @ConfigurationProperties
+// Note: record requires Java 16+. For Java 11–15, use a @Data @ConfigurationProperties class instead.
 @ConfigurationProperties(prefix = "app")
 public record AppConfig(String apiKey, String dbUrl) {}
 ```
@@ -51,6 +52,7 @@ public record AppConfig(String apiKey, String dbUrl) {}
 
 #### Always Validate User Input (Bean Validation)
 ```java
+// Note: record requires Java 16+. For Java 11–15, use @Data @Builder @NoArgsConstructor @AllArgsConstructor class instead.
 public record CreateUserRequest(
     @NotBlank @Email String email,
     @NotBlank @Size(min = 1, max = 100) String name,
@@ -109,6 +111,11 @@ jdbcTemplate.query(query, ...);
 
 #### ✅ ALWAYS Use Parameterized Queries
 ```java
+// Safe - MyBatis Plus: always #{}, never ${}
+// #{email} → prepared statement placeholder (safe)
+// ${email} → string interpolation directly into SQL (injection risk)
+List<UserDO> selectByEmail(@Param("email") String email); // XML: WHERE email = #{email}
+
 // Safe - parameterized query with JdbcTemplate
 String sql = "SELECT * FROM users WHERE email = ?";
 jdbcTemplate.query(sql, rowMapper, userEmail);
@@ -122,14 +129,15 @@ Optional<User> findByEmail(String email);
 ```
 
 #### Verification Steps
-- [ ] All database queries use parameterized queries or JPA
+- [ ] MyBatis mapper XML uses `#{}` exclusively — grep for `${}` in `src/main/resources/mapper/`
+- [ ] All JdbcTemplate queries use `?` placeholders
 - [ ] No string concatenation in SQL
 - [ ] No native queries with string interpolation
 - [ ] JPQL or Criteria API used for dynamic queries
 
 ### 4. Authentication & Authorization
 
-#### Spring Security Configuration
+#### Spring Security Configuration (stateless JWT REST API)
 ```java
 @Configuration
 @EnableWebSecurity
@@ -137,7 +145,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+            // Stateless JWT APIs do not use server-side sessions → CSRF not applicable
+            .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**").permitAll()
@@ -148,6 +157,9 @@ public class SecurityConfig {
         return http.build();
     }
 }
+// For stateful session-based apps (e.g. admin panel), enable CSRF:
+// .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+```
 ```
 
 #### Authorization Checks

@@ -113,6 +113,8 @@ Location: /api/v1/users/abc-123
 
 ## Response Format
 
+> **Project envelope first**: if the project already defines a unified response wrapper (e.g., `BaseResp<T>` with `code`/`msg`/`data` fields), use that instead of the `ApiResponse` structure shown below. The patterns here are reference designs for greenfield APIs.
+
 ### Success Response
 
 ```json
@@ -175,6 +177,7 @@ Location: /api/v1/users/abc-123
 
 ```java
 // Option A: Envelope with data wrapper (recommended for public APIs)
+// record requires Java 16+. For Java 11–15, use a regular class with Lombok.
 public record ApiResponse<T>(T data, PaginationMeta meta, PaginationLinks links) {
     public ApiResponse(T data) { this(data, null, null); }
 }
@@ -401,12 +404,13 @@ Accept: application/vnd.myapp.v2+json
 
 ```java
 // Request DTO with Bean Validation
+// Note: record requires Java 16+. For Java 11–15, use @Data @Builder @NoArgsConstructor @AllArgsConstructor class instead.
 public record CreateUserRequest(
     @NotBlank @Email String email,
     @NotBlank @Size(min = 1, max = 100) String name
 ) {}
 
-// Response DTO
+// Response DTO (Java 16+; see note above)
 public record UserResponse(String id, String email, String name, Instant createdAt) {}
 
 // Controller
