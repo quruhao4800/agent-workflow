@@ -82,7 +82,7 @@ Task tool (general-purpose):
 
     - [ ] Coverage evidence provided by implementer: Service ≥85%, Controller ≥80%, overall ≥80%
           (check implementer's report for coverage numbers — do NOT re-run tests yourself)
-    - [ ] No single method exceeds 50 lines
+    - [ ] No business method exceeds 50 lines (test methods may be up to 80 lines)
     - [ ] No cyclomatic complexity >10 (deeply nested conditionals)
     - [ ] No magic numbers — use named constants or enums
     - [ ] No INFO/WARN logging inside loops (log summary before/after instead)

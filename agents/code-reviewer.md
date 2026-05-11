@@ -146,7 +146,7 @@ Page<User> page = mapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
 ### Code Quality (MEDIUM)
 
 - **Coverage evidence missing or below threshold** — check that the implementer reported coverage numbers (Service ≥85%, Controller ≥80%, overall ≥80%); do NOT re-run tests yourself
-- **Large method (>50 lines)** — extract by responsibility
+- **Large method (>50 lines for business methods, >80 lines for test methods)** — extract by responsibility
 - **Cyclomatic complexity >10** — deeply nested conditionals; use early returns or extract helpers
 - **Magic numbers** — unexplained numeric literals; define as named constant or enum
 - **`new ArrayList()` without capacity** — when size is predictable, use `new ArrayList<>(n)` to avoid resizing

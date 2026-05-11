@@ -2,7 +2,8 @@
 
 ## File and Method Size
 
-- Single method: ≤50 lines, cyclomatic complexity ≤10
+- Business method: ≤50 lines, cyclomatic complexity ≤10
+- Test method: ≤80 lines (Given/When/Then structure is naturally longer)
 - Single file: ≤800 lines — extract by responsibility when approaching limit
 - Organize by feature/domain, not by type
 
