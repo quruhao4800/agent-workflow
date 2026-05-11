@@ -60,3 +60,21 @@ if (status == OrderStatus.COMPLETED.getCode()) { ... }
 
 - Never use FQN inside method bodies — always use `import` statements
 - Exception: two classes with the same simple name in scope
+
+## Logging
+
+- Always use Lombok `@Slf4j` — never declare `Logger` manually
+- Never use `System.out.println` or `e.printStackTrace()`
+- Always use `{}` placeholders — never concatenate strings in log calls
+- Always pass the exception object as the last argument: `log.error("msg: {}", id, e)`
+
+```java
+// BAD
+System.out.println("user: " + userId);
+log.error("failed: " + e.getMessage());
+log.error("failed", e.getMessage());
+
+// GOOD
+log.info("Processing user {}", userId);
+log.error("Failed to process user {}", userId, e);
+```
