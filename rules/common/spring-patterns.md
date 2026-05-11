@@ -32,6 +32,53 @@ public void process() {
 }
 ```
 
+## @Async Rules
+
+- Never call an `@Async` method from within the same class — Spring AOP proxy cannot intercept internal calls; the method runs synchronously with no error
+- `@Async` methods returning `void` silently swallow exceptions — always return `Future<?>` or `CompletableFuture<?>` so the caller can handle failures
+- `@EnableAsync` must be present on a `@Configuration` class — without it all `@Async` annotations are silently ignored
+
+```java
+// BAD: internal call — @Async silently ignored, runs synchronously
+@Service
+public class NotificationService {
+    public void notify(Long userId) {
+        sendEmail(userId); // same-class call, proxy bypassed
+    }
+
+    @Async
+    public void sendEmail(Long userId) { ... }
+}
+
+// GOOD: call from another bean
+@Service
+@RequiredArgsConstructor
+public class OrderService {
+    private final NotificationService notificationService;
+
+    public void complete(Long orderId) {
+        notificationService.sendEmail(orderId); // crosses proxy boundary
+    }
+}
+
+// BAD: void @Async swallows exception silently
+@Async
+public void process() {
+    throw new RuntimeException("failed"); // caller never knows
+}
+
+// GOOD: return CompletableFuture so caller can handle failure
+@Async
+public CompletableFuture<Void> process() {
+    try {
+        // ...
+        return CompletableFuture.completedFuture(null);
+    } catch (Exception e) {
+        return CompletableFuture.failedFuture(e);
+    }
+}
+```
+
 ## Dependency Injection
 
 - Prefer constructor injection over `@Autowired` on fields — enables immutability and easier unit testing without Spring context
