@@ -80,6 +80,8 @@ Task tool (general-purpose):
 
     ### 5. Code Quality (MEDIUM)
 
+    - [ ] Test coverage meets thresholds: Service ≥85%, Controller ≥80%, overall ≥80%
+          (run: `./gradlew test jacocoTestReport` — check `build/reports/jacoco/test/html/index.html`)
     - [ ] No single method exceeds 50 lines
     - [ ] No cyclomatic complexity >10 (deeply nested conditionals)
     - [ ] No magic numbers — use named constants or enums
