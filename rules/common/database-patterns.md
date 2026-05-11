@@ -1,36 +1,46 @@
 # Database Patterns
 
-## Query Rules
+## Mandatory
 
-- Never query in a loop — loop calling `selectById(id)` per item causes N+1 queries; use `selectBatchIds(ids)` or a JOIN query
-- All user-facing list endpoints must paginate — unbounded `selectList()` on large tables causes OOM and slow responses
+Rules in this section block task completion and code submission when violated.
+
+### No N+1 Queries
+
+Never query inside a loop — use `selectBatchIds` or a JOIN query instead.
 
 ```java
-// BAD: N+1
+// BAD: N queries
 for (Long id : ids) {
     Entity e = mapper.selectById(id);
     results.add(e);
 }
 
-// GOOD: batch fetch
+// GOOD: 1 query
 List<Entity> results = mapper.selectBatchIds(ids);
+```
 
-// BAD: unbounded list
+### List Endpoints Must Paginate
+
+Never use unbounded `selectList()` on user-facing list endpoints — large tables cause OOM and slow responses.
+
+```java
+// BAD
 List<User> all = mapper.selectList(wrapper);
 
-// GOOD: paginated
+// GOOD
 Page<User> page = mapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
 ```
 
-## Write Rules
+### Multi-Step Writes Require @Transactional
 
-- Multiple write operations (insert + update, or insert + insert) in the same method must be wrapped in `@Transactional` — partial failure without a transaction leaves data inconsistent
+Two or more write operations in the same method must be wrapped in `@Transactional` —
+partial failure without a transaction leaves data inconsistent.
 
 ```java
-// BAD: two writes, no transaction — second failure leaves orphan record
+// BAD: second failure leaves orphan record
 public void createOrder(OrderDO order, List<OrderItemDO> items) {
     orderMapper.insert(order);
-    orderItemMapper.batchInsert(items); // fails → order exists, items missing
+    orderItemMapper.batchInsert(items);
 }
 
 // GOOD
@@ -41,6 +51,27 @@ public void createOrder(OrderDO order, List<OrderItemDO> items) {
 }
 ```
 
-## SQL Placement
+### Batch Write for Multiple Records
 
-- Complex queries (multi-join, multi-condition) belong in XML mapper files, not inline `@Select` annotations — XML is readable, testable, and supports dynamic SQL cleanly
+Never insert or update multiple records in a loop — use batch operations.
+
+```java
+// BAD: N round-trips
+for (OrderItemDO item : items) {
+    orderItemMapper.insert(item);
+}
+
+// GOOD: 1 round-trip
+orderItemMapper.batchInsert(items); // MyBatis Plus saveBatch
+```
+
+---
+
+## Recommended
+
+Rules in this section are flagged in review but do not block submission.
+
+### Complex SQL in XML Mapper
+
+Multi-join or multi-condition queries should be in XML mapper files, not inline `@Select` annotations —
+XML is more readable, testable, and supports dynamic SQL cleanly.

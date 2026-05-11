@@ -43,12 +43,17 @@ Load plan artifacts, execute tasks in batches, and stop immediately when require
 
 2. Read all found files.
 
-3. Extract a **Rules Compliance Checklist** from the loaded content. For each rule, classify:
-   - `AUTO_CHECK`: objective and verifiable — naming conventions, required annotations, forbidden imports, file size limits, mandatory fields, banned patterns
-   - `SKIP`: principles or guidelines without a clear pass/fail test (e.g., "prefer clarity", "keep it simple")
+3. Extract two separate checklists from the loaded content:
+   - `MUST_CHECK`: rules under `## Mandatory` sections — objective, verifiable, block task completion if violated
+   - `SHOULD_CHECK`: rules under `## Recommended` sections — flag in report but do not block completion
+   - `SKIP`: principles without a clear pass/fail test (e.g., "prefer clarity", "keep it simple")
 
-4. Output a compact summary:
-   > "Loaded N rules files. Extracted X AUTO_CHECK items, Y items skipped as non-verifiable."
+4. Enforcement:
+   - `MUST_CHECK` violation → task **cannot** be marked `completed`; fix before proceeding
+   - `SHOULD_CHECK` violation → record in batch report as flagged item; task may still complete
+
+5. Output a compact summary:
+   > "Loaded N rules files. Extracted X MUST_CHECK items, Y SHOULD_CHECK items."
 
    If no rules files are found: note it and continue without a checklist.
 

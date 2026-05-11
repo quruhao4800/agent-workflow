@@ -1,13 +1,69 @@
 # Code Quality Standards
 
-## File and Method Size
+## Mandatory
+
+Rules in this section block task completion and code submission when violated.
+
+### No Empty Catch Blocks
+
+Never silently swallow exceptions — empty catch blocks are forbidden.
+
+```java
+// BAD
+try { repo.save(entity); } catch (Exception e) {}
+
+// GOOD
+try { repo.save(entity); } catch (Exception e) {
+    log.error("Failed to save entity {}: {}", id, e.getMessage(), e);
+    throw e;
+}
+```
+
+### Do Not Expose Internal Details to API Callers
+
+Never return stack traces, internal exception messages, or system details in API responses.
+
+### Input Validation at Controller Boundary
+
+Use `@Valid` / `@Validated` on all Controller `@RequestBody` and `@ModelAttribute` params.
+
+### Uniform API Response Format
+
+- Success: HTTP 2xx + `{"code": 0, "data": {...}}`
+- Error: HTTP 4xx/5xx + `{"code": "ERROR_CODE", "message": "..."}`
+- Paginated list: response includes `total`, `pageNum`, `pageSize`
+
+### Logging Constraints
+
+- Always use Lombok `@Slf4j` — never declare `Logger` manually
+- Never use `System.out.println` or `e.printStackTrace()`
+- Always use `{}` placeholders — never concatenate strings in log calls
+- Always pass the exception object as the last argument: `log.error("msg: {}", id, e)`
+
+```java
+// BAD
+System.out.println("user: " + userId);
+log.error("failed: " + e.getMessage());
+log.error("failed to process", e.getMessage());
+
+// GOOD
+log.info("Processing user {}", userId);
+log.error("Failed to process user {}", userId, e);
+```
+
+---
+
+## Recommended
+
+Rules in this section are flagged in review but do not block submission. Exceptions are allowed when there is a clear reason.
+
+### Method and File Size
 
 - Business method: ≤50 lines, cyclomatic complexity ≤10
 - Test method: ≤80 lines (Given/When/Then structure is naturally longer)
 - Single file: ≤800 lines — extract by responsibility when approaching limit
-- Organize by feature/domain, not by type
 
-## Naming Conventions (Java)
+### Naming Conventions (Java)
 
 | Target | Convention | Example |
 |--------|-----------|---------|
@@ -20,31 +76,16 @@
 | Enum value | UPPER_SNAKE_CASE | `PENDING`, `COMPLETED` |
 | Package | all lowercase, dot-separated | `com.example.user` |
 
-## Class Member Order
+### Class Member Order
 
 Constants → static fields → instance fields → constructors → methods
 
-## Error Handling
+### Error Handling Style
 
-- Never silently swallow exceptions — empty catch blocks are forbidden
-- Always log with context: `logger.error("failed to process user {}: {}", userId, reason, e)`
+- Log with context: `logger.error("failed to process user {}: {}", userId, reason, e)`
 - Business failures: throw typed `BusinessException`, not raw `RuntimeException`
-- Do not expose internal stack traces or system details to API callers
 
-## Input Validation
-
-- Validate all external input at system boundaries (Controller layer)
-- Use `@Valid` / `@Validated` on Controller `@RequestBody` and `@ModelAttribute` params
-- Fail fast with a specific, actionable error message
-
-## API Response Format
-
-- All endpoints return a uniform response envelope
-- Success: HTTP 2xx + `{"code": 0, "data": {...}}`
-- Error: HTTP 4xx/5xx + `{"code": "ERROR_CODE", "message": "..."}`
-- Paginated list: response includes `total`, `pageNum`, `pageSize`
-
-## No Magic Numbers
+### No Magic Numbers
 
 Use named constants or enums for all numeric/string literals that carry business meaning.
 
@@ -56,25 +97,7 @@ if (status == 2) { ... }
 if (status == OrderStatus.COMPLETED.getCode()) { ... }
 ```
 
-## Imports
+### Imports
 
-- Never use FQN inside method bodies — always use `import` statements
-- Exception: two classes with the same simple name in scope
-
-## Logging
-
-- Always use Lombok `@Slf4j` — never declare `Logger` manually
-- Never use `System.out.println` or `e.printStackTrace()`
-- Always use `{}` placeholders — never concatenate strings in log calls
-- Always pass the exception object as the last argument: `log.error("msg: {}", id, e)`
-
-```java
-// BAD
-System.out.println("user: " + userId);
-log.error("failed: " + e.getMessage());
-log.error("failed", e.getMessage());
-
-// GOOD
-log.info("Processing user {}", userId);
-log.error("Failed to process user {}", userId, e);
-```
+Never use FQN inside method bodies — always use `import` statements.
+Exception: two classes with the same simple name in scope.

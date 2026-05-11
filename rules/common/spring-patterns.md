@@ -1,16 +1,31 @@
 # Spring Boot Patterns
 
-## @Transactional Rules
+## Mandatory
 
-- Never put `@Transactional` on a `private` method — Spring AOP proxy cannot intercept it; the annotation is silently ignored and no transaction wraps the call
-- Never swallow exceptions inside `@Transactional` — catching an exception without rethrowing means the transaction commits even on failure; always rethrow or let exceptions propagate
+Rules in this section block task completion and code submission when violated.
+
+### @Transactional: No Private Methods
+
+Never put `@Transactional` on a `private` method — Spring AOP proxy cannot intercept it;
+the annotation is silently ignored and no transaction wraps the call.
 
 ```java
-// BAD: @Transactional on private — silently ignored
+// BAD: silently ignored
 @Transactional
 private void saveInternal() { ... }
 
-// BAD: swallowed exception — transaction commits on failure
+// GOOD: public method
+@Transactional
+public void save() { ... }
+```
+
+### @Transactional: No Swallowed Exceptions
+
+Never catch an exception inside a `@Transactional` method without rethrowing — the transaction
+commits even on failure, causing silent data inconsistency.
+
+```java
+// BAD: transaction commits on failure
 @Transactional
 public void process() {
     try {
@@ -20,54 +35,60 @@ public void process() {
     }
 }
 
-// GOOD: exception propagates — transaction rolls back
+// GOOD: rethrow so transaction rolls back
 @Transactional
 public void process() {
     try {
         repo.save(entity);
     } catch (Exception e) {
-        log.error("failed to process: {}", id, e);
+        log.error("Failed to process {}", id, e);
         throw e;
     }
 }
 ```
 
-## @Async Rules
+### @Async: No Same-Class Internal Calls
 
-- Never call an `@Async` method from within the same class — Spring AOP proxy cannot intercept internal calls; the method runs synchronously with no error
-- `@Async` methods returning `void` silently swallow exceptions — always return `Future<?>` or `CompletableFuture<?>` so the caller can handle failures
-- `@EnableAsync` must be present on a `@Configuration` class — without it all `@Async` annotations are silently ignored
+Never call an `@Async` method from within the same class — Spring AOP proxy is bypassed;
+the method runs synchronously with no error or warning.
 
 ```java
-// BAD: internal call — @Async silently ignored, runs synchronously
+// BAD: internal call bypasses proxy, runs synchronously
 @Service
 public class NotificationService {
     public void notify(Long userId) {
-        sendEmail(userId); // same-class call, proxy bypassed
+        sendEmail(userId); // proxy bypassed
     }
 
     @Async
     public void sendEmail(Long userId) { ... }
 }
 
-// GOOD: call from another bean
+// GOOD: call through another bean
 @Service
 @RequiredArgsConstructor
 public class OrderService {
     private final NotificationService notificationService;
 
     public void complete(Long orderId) {
-        notificationService.sendEmail(orderId); // crosses proxy boundary
+        notificationService.sendEmail(orderId);
     }
 }
+```
 
-// BAD: void @Async swallows exception silently
+### @Async: No void Return (Exceptions Silently Lost)
+
+`@Async` methods returning `void` silently swallow exceptions — callers have no way to detect failure.
+Always return `CompletableFuture<?>`.
+
+```java
+// BAD: exception silently lost
 @Async
 public void process() {
     throw new RuntimeException("failed"); // caller never knows
 }
 
-// GOOD: return CompletableFuture so caller can handle failure
+// GOOD
 @Async
 public CompletableFuture<Void> process() {
     try {
@@ -79,16 +100,27 @@ public CompletableFuture<Void> process() {
 }
 ```
 
-## Dependency Injection
+### @EnableAsync Must Be Present
 
-- Prefer constructor injection over `@Autowired` on fields — enables immutability and easier unit testing without Spring context
+`@EnableAsync` must be present on a `@Configuration` class when `@Async` is used — without it
+all `@Async` annotations are silently ignored.
+
+---
+
+## Recommended
+
+Rules in this section are flagged in review but do not block submission.
+
+### Constructor Injection Over Field Injection
+
+Prefer constructor injection over `@Autowired` on fields — enables immutability and easier unit testing.
 
 ```java
-// BAD: field injection
+// BAD
 @Autowired
 private UserMapper userMapper;
 
-// GOOD: constructor injection (Lombok @RequiredArgsConstructor)
+// GOOD
 @RequiredArgsConstructor
 @Service
 public class UserService {
@@ -96,18 +128,17 @@ public class UserService {
 }
 ```
 
-## Layered Architecture
+### Layered Architecture
 
-- Object conversion (DO → DTO / DTO → DO) must be done in a `XxxConverter` class, not in Service
-- Entity/DO instances must be created via static factory methods (`Entity.create(...)`), not via builder in Service layer
-- Entity state transitions must go through entity business methods (`entity.expire()`), not direct field setters
-- Controller must delegate immediately to Service — no conditional logic, data transformation, or business rules in Controller
+- Object conversion (DO → DTO / DTO → DO) should be done in a `XxxConverter` class, not in Service
+- Entity/DO instances should be created via static factory methods (`Entity.create(...)`), not builder in Service
+- Entity state transitions should go through entity business methods (`entity.expire()`), not direct setters
+- Controller should delegate immediately to Service — no conditional logic or data transformation in Controller
 
 ```java
 // BAD: conversion in Service
 UserResponse response = new UserResponse();
 response.setId(userDO.getId());
-response.setName(userDO.getName());
 
 // GOOD: delegate to Converter
 return UserConverter.toResponse(userDO);

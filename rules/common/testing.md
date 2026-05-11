@@ -1,6 +1,10 @@
 # Testing Standards
 
-## Coverage Thresholds (enforced by JaCoCo)
+## Mandatory
+
+Rules in this section block task completion and code submission when violated.
+
+### Coverage Thresholds (enforced by JaCoCo)
 
 | Layer | Minimum |
 |-------|---------|
@@ -13,14 +17,20 @@
 # Report: build/reports/jacoco/test/html/index.html
 ```
 
-## TDD Workflow (MANDATORY)
+---
+
+## Recommended
+
+Rules in this section are flagged in review but do not block submission.
+
+### TDD Workflow
 
 1. Write failing test — confirm it fails for the right reason (RED)
 2. Write minimal implementation (GREEN)
 3. Refactor — tests must stay green (IMPROVE)
 4. Verify coverage meets thresholds above
 
-## Test Layer Selection
+### Test Layer Selection
 
 | Layer | Annotation | Use when |
 |-------|-----------|----------|
@@ -31,6 +41,6 @@
 
 Default to the narrowest slice. Use `@SpringBootTest` only when lower slices cannot cover the case.
 
-## Agent Support
+### Agent Support
 
 Use `tdd-guide` agent proactively for all new features and bug fixes.

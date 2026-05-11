@@ -41,68 +41,58 @@ Task tool (general-purpose):
 
     ## Review Checklist
 
-    Work through each category. For every issue found, record: severity, file:line,
+    Rules files use two sections: `## Mandatory` and `## Recommended`.
+    Apply different enforcement based on the section a rule comes from.
+
+    Work through each item. For every issue found, record: severity, file:line,
     what the problem is, and the fix. Only report issues you are >80% confident are real.
 
-    ### 1. Security (CRITICAL — must flag)
+    ### Mandatory Rules (from `## Mandatory` sections in project rules)
+
+    Violations here → BLOCKED. Must fix before merge.
 
     - [ ] No `${}` interpolation in MyBatis XML/annotations (use `#{}`)
-    - [ ] No string-concatenated SQL
+    - [ ] No hardcoded credentials in source
     - [ ] No sensitive data (passwords, tokens, PII) in log statements
     - [ ] All Controller `@RequestBody` / `@ModelAttribute` params have `@Valid` or `@Validated`
     - [ ] No authentication bypass (protected endpoints have auth check)
-    - [ ] No hardcoded credentials in source
-
-    ### 2. Spring Boot Patterns (HIGH)
-
     - [ ] No `@Transactional` on `private` methods
-    - [ ] Pure query-only Service methods use `@Transactional(readOnly = true)`
     - [ ] No exception swallowed inside `@Transactional` (caught but not rethrown = silent commit)
-    - [ ] No `System.out.println` / `e.printStackTrace()` — must use SLF4J `@Slf4j`
-    - [ ] No string concatenation in SLF4J calls — use `logger.error("msg: {}", var, e)`
-    - [ ] No silent catch blocks (catch with no log and no rethrow)
-    - [ ] No field injection (`@Autowired` on field) — prefer constructor injection
-
-    ### 3. Layered Architecture (HIGH)
-
-    - [ ] Object conversion (DO → DTO) done in `XxxConverter`, not in Service
-    - [ ] DO/Entity created via static factory method (`Entity.create(...)`), not builder in Service
-    - [ ] Entity state transitions via business methods (`entity.expire()`), not direct setters
-    - [ ] No business logic or conditional branching in Controller
-    - [ ] All Spring components have stereotype annotations (`@Service`, `@RestController`, etc.)
-
-    ### 4. MyBatis Plus / Database (HIGH)
-
-    - [ ] No N+1 queries (loop calling `selectById` per item — use `selectBatchIds`)
+    - [ ] No `@Async` same-class internal call (proxy bypassed, runs synchronously)
+    - [ ] No `@Async` method returning `void` (exceptions silently lost)
+    - [ ] No `System.out.println` / `e.printStackTrace()`
+    - [ ] No string concatenation in log calls — use `logger.error("msg: {}", var, e)`
+    - [ ] No empty catch blocks
+    - [ ] No N+1 queries (loop calling `selectById` — use `selectBatchIds`)
     - [ ] User-facing list endpoints use pagination (`Page<>`)
-    - [ ] Multi-step writes (insert + update) wrapped in `@Transactional`
-    - [ ] Complex multi-join SQL in XML mapper, not inline `@Select` annotation
+    - [ ] Multi-step writes wrapped in `@Transactional`
+    - [ ] Multiple record inserts/updates use batch operations, not loop
+    - [ ] Coverage evidence provided: Service ≥85%, Controller ≥80%, overall ≥80%
+          (check implementer's report — do NOT re-run tests yourself)
 
-    ### 5. Code Quality (MEDIUM)
+    ### Recommended Rules (from `## Recommended` sections in project rules)
 
-    - [ ] Coverage evidence provided by implementer: Service ≥85%, Controller ≥80%, overall ≥80%
-          (check implementer's report for coverage numbers — do NOT re-run tests yourself)
+    Violations here → WARNING. Flag but do not block.
+
     - [ ] No business method exceeds 50 lines (test methods may be up to 80 lines)
-    - [ ] No cyclomatic complexity >10 (deeply nested conditionals)
+    - [ ] No cyclomatic complexity >10
     - [ ] No magic numbers — use named constants or enums
-    - [ ] No INFO/WARN logging inside loops (log summary before/after instead)
-    - [ ] No dead code (commented-out blocks, unused imports, unreachable branches)
-    - [ ] Boolean fields prefixed with `is` / `has` / `can`
-
-    ### 6. Best Practices (LOW)
-
-    - [ ] Public methods and interface methods have JavaDoc
-    - [ ] No FQN used inside method bodies (use import statements)
-    - [ ] Class member order: constants → static fields → instance fields → constructors → methods
+    - [ ] Constructor injection preferred over field `@Autowired`
+    - [ ] Object conversion in `XxxConverter`, not in Service
+    - [ ] DO/Entity created via static factory, not builder in Service
+    - [ ] Entity state transitions via business methods, not direct setters
+    - [ ] No business logic in Controller
+    - [ ] Complex SQL in XML mapper, not inline `@Select`
+    - [ ] Consistent naming conventions (UpperCamelCase classes, lowerCamelCase methods/vars)
+    - [ ] No dead code (commented-out blocks, unused imports)
     - [ ] No `TODO`/`FIXME` without a ticket reference
-    - [ ] Consistent naming: UpperCamelCase classes, lowerCamelCase methods/vars, UPPER_SNAKE_CASE constants
 
     ## Output Format
 
     For each issue found:
 
     ```
-    [SEVERITY] Short description
+    [MUST/SHOULD] Short description
     File: path/to/File.java:line
     Issue: explanation of why this is a problem
     Fix: what to change
@@ -113,18 +103,16 @@ Task tool (general-purpose):
     ```
     ## Review Summary
 
-    | Severity | Count | Status |
-    |----------|-------|--------|
-    | CRITICAL | 0     | pass   |
-    | HIGH     | ?     | ?      |
-    | MEDIUM   | ?     | ?      |
-    | LOW      | ?     | ?      |
+    | Type    | Count | Status |
+    |---------|-------|--------|
+    | MUST    | 0     | pass   |
+    | SHOULD  | ?     | ?      |
 
     Verdict: APPROVED / WARNING / BLOCKED
     ```
 
-    Approval criteria:
-    - APPROVED: no CRITICAL or HIGH issues
-    - WARNING: HIGH issues only (can merge with caution, note the issues)
-    - BLOCKED: any CRITICAL issue — must fix before proceeding
+    Verdict criteria:
+    - APPROVED: zero MUST violations
+    - WARNING: zero MUST violations, one or more SHOULD violations (can merge, fix recommended)
+    - BLOCKED: any MUST violation — must fix before merge
 ```
