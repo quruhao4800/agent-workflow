@@ -9,12 +9,12 @@
 ```
 quruhao-skills/
 │
-├── skills/                                  # Agent 技能库（12 个 skills）
-│   ├── workflow/                            # 🔄 开发流程（3）
+├── skills/                                  # Agent 技能库（18 个 skills）
+│   ├── workflow/                            # 🔄 开发流程（4）
 │   │   ├── brainstorming/                   #   设计对齐（问答→spec→确认）
 │   │   ├── writing-plans/                   #   精确 task 拆解
-│   │   ├── executing-plans/                 #   分批执行 + 检查点
-│   │   └── subagent-driven-development/     #   subagent 独立执行 + 双阶段 review
+│   │   ├── executing-plans/                 #   分批执行 + 检查点（小计划）
+│   │   └── subagent-driven-development/     #   subagent 独立执行 + 双阶段 review（大计划）
 │   │
 │   ├── testing/                             # 🧪 测试（2）
 │   │   ├── test-driven-development/         #   RED → GREEN → REFACTOR（Java/JUnit 5）
@@ -29,10 +29,12 @@ quruhao-skills/
 │   │   ├── receiving-code-review/           #   处理 review 反馈
 │   │   └── finishing-a-development-branch/  #   merge / PR / 清理
 │   │
-│   ├── languages/                           # 💻 语言与基础设施（3）
+│   ├── languages/                           # 💻 语言与基础设施（5）
 │   │   ├── springboot-patterns/             #   Spring Boot 最佳实践
 │   │   ├── api-design/                      #   REST API 设计（Java 示例）
-│   │   └── database-migrations/             #   数据库迁移（Flyway）
+│   │   ├── database-migrations/             #   数据库迁移（Flyway）
+│   │   ├── redis-patterns/                  #   Redis 缓存、锁、流（Redisson）
+│   │   └── logging-standards/              #   日志规范
 │   │
 │   └── meta/                                # ⚙️ 元技能（2）
 │       ├── using-superpowers/               #   THE RULE: 强制 skill 检查

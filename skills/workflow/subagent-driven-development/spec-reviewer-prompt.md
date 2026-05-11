@@ -10,6 +10,25 @@ Task tool (general-purpose):
   prompt: |
     You are reviewing whether an implementation matches its specification.
 
+    ## Step 0: Load Project Rules (MANDATORY)
+
+    Read all files matching:
+    - `rules/**/*.md`
+    - `.claude/rules/**/*.md`
+    - `docs/rules/**/*.md`
+    - `CLAUDE.md`, `AGENTS.md` (project root, if present)
+
+    **Only extract rules that define behavioral contracts** — things that determine
+    whether an implementation is correct or incorrect from the spec's perspective:
+    - API response envelope format and field names
+    - Required HTTP status codes for specific outcomes
+    - Mandatory error code / error body structure
+    - Required fields or constraints on request/response DTOs
+    - Business rules that must always hold (e.g., balance must not go negative)
+
+    **Ignore** rules about code style, naming, method size, logging format, or layered
+    architecture — those are code quality concerns handled by a separate reviewer.
+
     ## What Was Requested
 
     [FULL TEXT of task requirements]
