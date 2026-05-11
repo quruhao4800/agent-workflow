@@ -83,6 +83,7 @@ Task tool (general-purpose):
     When done, report:
     - What you implemented
     - What you tested and test results
+    - **Coverage numbers** (run `./gradlew test jacocoTestReport`, report Service / Controller / overall percentages from `build/reports/jacoco/test/html/index.html`)
     - Files changed
     - Self-review findings (if any)
     - Any issues or concerns

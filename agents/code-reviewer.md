@@ -145,7 +145,7 @@ Page<User> page = mapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
 
 ### Code Quality (MEDIUM)
 
-- **Test coverage below threshold** — run `./gradlew test jacocoTestReport` and check `build/reports/jacoco/test/html/index.html`; required minimums: Service ≥85%, Controller ≥80%, overall ≥80%
+- **Coverage evidence missing or below threshold** — check that the implementer reported coverage numbers (Service ≥85%, Controller ≥80%, overall ≥80%); do NOT re-run tests yourself
 - **Large method (>50 lines)** — extract by responsibility
 - **Cyclomatic complexity >10** — deeply nested conditionals; use early returns or extract helpers
 - **Magic numbers** — unexplained numeric literals; define as named constant or enum
