@@ -146,6 +146,7 @@ After each batch:
 - List AUTO_FIX rules corrections applied (if any)
 - List NEEDS_DECISION rules findings as a numbered batch (if any) — wait for user response before next batch
 - List any open `CR-###`
+- **Re-state the AUTO_CHECK checklist** (compact form) so rules stay in context near-top for the next batch
 - Say: "Ready for feedback."
 
 ## Step 4: Continue
