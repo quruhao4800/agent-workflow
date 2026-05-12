@@ -19,7 +19,8 @@
     "./skills/languages/api-design",
     "./skills/languages/database-migrations",
     "./skills/languages/logging-standards",
-    "./skills/languages/springboot-patterns"
+    "./skills/languages/springboot-patterns",
+    "./skills/languages/redis-patterns"
   ],
   "agents": [
     "./agents/architect.md",
