@@ -80,11 +80,15 @@ Task tool (general-purpose):
 
     ## Report Format
 
-    When done, report:
-    - What you implemented
-    - What you tested and test results
-    - **Coverage numbers** (run `./gradlew test jacocoTestReport`, report Service / Controller / overall percentages from `build/reports/jacoco/test/html/index.html`)
-    - Files changed
-    - Self-review findings (if any)
-    - Any issues or concerns
+    Return a **concise summary only** — do not dump full file contents or long explanations.
+    Details are in the committed files; the orchestrator only needs status and key facts.
+
+    ```
+    Status: DONE / BLOCKED
+    Implemented: [1-2 sentences]
+    Tests: PASS | FAIL — [brief note if fail]
+    Coverage: Service X% / Controller X% / Overall X%
+    Files changed: [list of paths]
+    Issues: [bullet points only, or "none"]
+    ```
 ```

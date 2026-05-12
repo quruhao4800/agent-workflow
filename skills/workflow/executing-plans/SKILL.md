@@ -20,12 +20,12 @@ Read `03-implementation-plan.md`. Count tasks by status and estimate per-task fi
 
 | Condition | Decision |
 |-----------|----------|
-| Pending tasks ≤ 5 **AND** every task touches ≤ 3 files | ✅ Continue with `executing-plans` (this skill) |
-| Pending tasks > 5 **OR** any task touches > 3 files | 🔄 Switch to `quruhao-skills:subagent-driven-development` |
+| Pending tasks ≤ 8 **AND** every task touches ≤ 5 files | ✅ Continue with `executing-plans` (this skill) |
+| Pending tasks > 8 **OR** any task touches > 5 files | 🔄 Switch to `quruhao-skills:subagent-driven-development` |
 
 Announce: `"Mode: executing-plans — N pending tasks, max M files per task."` or `"Switching to subagent-driven-development — reason: [N tasks / task X touches M files]."`
 
-**Why this matters:** `executing-plans` runs entirely in the main context. As tasks accumulate, context grows and output quality drops. `subagent-driven-development` gives each task a fresh context, preventing contamination across tasks.
+**Why this matters:** `executing-plans` runs entirely in the main context. As tasks accumulate, context grows and output quality drops. `subagent-driven-development` gives each task a fresh context, preventing contamination across tasks. For small plans (≤8 tasks), `executing-plans` avoids the per-subagent token overhead of cold-starting multiple agents.
 
 ## Overview
 

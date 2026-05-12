@@ -74,7 +74,10 @@ Task tool (general-purpose):
 
     **Verify by reading code, not by trusting report.**
 
-    Report:
-    - ✅ Spec compliant (if everything matches after code inspection)
-    - ❌ Issues found: [list specifically what's missing or extra, with file:line references]
+    Return a **concise report only** — no full file contents, no long explanations.
+
+    ```
+    Verdict: COMPLIANT / NON-COMPLIANT
+    Issues: [file:line — what's wrong — one line each, or "none"]
+    ```
 ```

@@ -1,6 +1,6 @@
 ---
 name: subagent-driven-development
-description: Use when executing implementation plans with many tasks or large file impact. Also invoked automatically when executing-plans detects the plan exceeds its threshold (>5 tasks or any task touches >3 files).
+description: Use when executing implementation plans with many tasks or large file impact. Also invoked automatically when executing-plans detects the plan exceeds its threshold (>8 tasks or any task touches >5 files).
 ---
 
 # Subagent-Driven Development
@@ -67,10 +67,17 @@ Announce: `"Ready set: [Task A, B, C]. Parallel groups: [[A, C], [B] (sequential
    - [ ] Error handling complete
    - [ ] All callers in `Impact` handled
    - [ ] Commit message: `type(scope): one-line English summary`
+
+**[USER CHECKPOINT 1]** Present implementer's concise report to user. Wait for explicit confirmation (e.g. "continue", "ok", "确认") before proceeding to review. Do NOT dispatch reviewers until confirmed.
+
 6. Dispatch spec reviewer (`spec-reviewer-prompt.md`).
 7. If spec issues exist, implementer fixes and spec review repeats.
 8. Dispatch code-quality reviewer (`code-quality-reviewer-prompt.md`).
-9. If quality issues exist, implementer fixes and quality review repeats.
+9. If quality issues exist:
+
+**[USER CHECKPOINT 2]** Present review findings (MUST/SHOULD violations) to user. Wait for explicit confirmation before dispatching implementer to fix. User may choose to skip SHOULD fixes.
+
+   Implementer fixes confirmed issues and quality review repeats.
 10. Update `04-verification.md` evidence for task REQ/CR/DR mapping.
 11. Mark task complete.
 

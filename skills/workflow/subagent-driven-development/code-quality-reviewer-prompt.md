@@ -89,30 +89,16 @@ Task tool (general-purpose):
 
     ## Output Format
 
-    For each issue found:
+    Return a **concise report only** — no full file contents, no long explanations.
 
     ```
-    [MUST/SHOULD] Short description
-    File: path/to/File.java:line
-    Issue: explanation of why this is a problem
-    Fix: what to change
-    ```
-
-    End with a summary table:
-
-    ```
-    ## Review Summary
-
-    | Type    | Count | Status |
-    |---------|-------|--------|
-    | MUST    | 0     | pass   |
-    | SHOULD  | ?     | ?      |
-
     Verdict: APPROVED / WARNING / BLOCKED
+    MUST violations: [file:line — issue — fix, one line each, or "none"]
+    SHOULD violations: [file:line — issue, one line each, or "none"]
     ```
 
     Verdict criteria:
     - APPROVED: zero MUST violations
-    - WARNING: zero MUST violations, one or more SHOULD violations (can merge, fix recommended)
+    - WARNING: zero MUST violations, one or more SHOULD violations
     - BLOCKED: any MUST violation — must fix before merge
 ```
