@@ -1,5 +1,8 @@
 # Agent Orchestration
 
+**Important:** These are AGENTS, not skills. Invoke them via the `Agent` tool, NOT the `Skill` tool.
+Attempting to call them as `quruhao-skills:planner` or similar will fail with "Unknown skill".
+
 ## Available Agents
 
 | Agent | Purpose | When to Use |
@@ -13,7 +16,7 @@
 
 ## Use Agents Proactively
 
-| Situation | Invoke |
+| Situation | Agent tool (subagent_type) |
 |-----------|--------|
 | New feature or architectural decision | `planner` → `architect` |
 | Writing new code or fixing a bug | `tdd-guide` |
