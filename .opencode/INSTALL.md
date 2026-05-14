@@ -17,7 +17,7 @@ ln -sfn ~/.config/opencode/agent-workflow/skills \
 ## 工作原理
 
 - Skills 通过 OpenCode 原生 skill tool 发现，解析 SKILL.md 的 YAML frontmatter
-- 命名空间前缀: `agent-workflow:systematic-debugging`, `agent-workflow:systematic-debugging`
+- 命名空间前缀: `agent-workflow:systematic-debugging`, `agent-workflow:springboot-patterns`
 - 优先级: project skills > personal skills > agent-workflow skills
 
 ## 更新

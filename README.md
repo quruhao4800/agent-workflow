@@ -1,6 +1,6 @@
 # agent-workflow
 
-通用 Agent Coding Workflow Kit——将 brainstorm → plan → execute → review 流程纪律固化为可复用 skill，让 AI 编码助手在任何项目中保持一致的工程规范。**Java / Spring Boot 是第一个深度适配的语言包**，其他语言欢迎社区贡献。综合了 [obra/superpowers](https://github.com/obra/superpowers) 的流程纪律和 [everything-claude-code](https://github.com/affaan-m/everything-claude-code) 的语言领域知识中**成熟可靠的部分**，后续独立维护和扩展。
+通用 Agent Workflow Kit——将 brainstorm → plan → execute → review 流程纪律固化为可复用 skill，让 AI 编码助手在任何项目中保持一致的工程规范。**Java / Spring Boot 是第一个深度适配的语言包**，其他语言欢迎社区贡献。综合了 [obra/superpowers](https://github.com/obra/superpowers) 的流程纪律和 [everything-claude-code](https://github.com/affaan-m/everything-claude-code) 的语言领域知识中**成熟可靠的部分**，后续独立维护和扩展。
 
 ---
 
