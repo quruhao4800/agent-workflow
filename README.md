@@ -1,10 +1,14 @@
 # agent-workflow
 
-通用 Agent Workflow Kit——将 brainstorm → plan → execute → review 流程纪律固化为可复用 skill，让 AI 编码助手在任何项目中保持一致的工程规范。**Java / Spring Boot 是第一个深度适配的语言包**，其他语言欢迎社区贡献。综合了 [obra/superpowers](https://github.com/obra/superpowers) 的流程纪律和 [everything-claude-code](https://github.com/affaan-m/everything-claude-code) 的语言领域知识中**成熟可靠的部分**，后续独立维护和扩展。
+[中文](#中文) | [English](#english)
 
 ---
 
-## 目录结构
+## 中文
+
+通用 Agent Workflow Kit——将 brainstorm → plan → execute → review 流程纪律固化为可复用 skill，让 AI 编码助手在任何项目中保持一致的工程规范。**Java / Spring Boot 是第一个深度适配的语言包**，其他语言欢迎社区贡献。综合了 [obra/superpowers](https://github.com/obra/superpowers) 的流程纪律和 [everything-claude-code](https://github.com/affaan-m/everything-claude-code) 的语言领域知识中**成熟可靠的部分**，后续独立维护和扩展。
+
+### 目录结构
 
 ```
 agent-workflow/
@@ -61,9 +65,7 @@ agent-workflow/
 └── install.ps1                              # Windows 安装脚本（创建 Junction）
 ```
 
----
-
-## 核心工作流
+### 核心工作流
 
 由 `skills/meta/using-superpowers/` 驱动：
 
@@ -87,11 +89,9 @@ agent-workflow/
       ⚠ 3 次失败 → 质疑架构
 ```
 
----
+### 安装与使用
 
-## 安装与使用
-
-### Claude Code（推荐）
+#### Claude Code（推荐）
 
 > **已验证平台：Windows 11。** Mac / Linux 用户请参考 [Claude Code 官方文档](https://docs.anthropic.com/claude-code) 中的插件安装说明，欢迎 PR 贡献其他平台的安装脚本。
 
@@ -116,7 +116,7 @@ New-Item -ItemType Junction `
 # 重启 Claude Code 生效
 ```
 
-### OpenCode
+#### OpenCode
 
 ```bash
 git clone <repo-url> ~/.config/opencode/agent-workflow
@@ -127,7 +127,7 @@ ln -sfn ~/.config/opencode/agent-workflow/skills \
 # 重启 OpenCode
 ```
 
-### Codex (OpenAI)
+#### Codex (OpenAI)
 
 ```bash
 git clone <repo-url> ~/.codex/agent-workflow
@@ -136,7 +136,7 @@ ln -sfn ~/.codex/agent-workflow/skills ~/.agents/skills/agent-workflow
 # 重启 Codex
 ```
 
-### Cursor / Windsurf
+#### Cursor / Windsurf
 
 ```bash
 cd ~/your-project
@@ -144,15 +144,13 @@ cat ~/agent-workflow/rules/common/*.md > .cursorrules
 cp .cursorrules .windsurfrules
 ```
 
-### GitHub Copilot
+#### GitHub Copilot
 
 ```bash
 cat ~/agent-workflow/rules/common/*.md > .github/copilot-instructions.md
 ```
 
----
-
-## 跨平台能力
+### 跨平台能力
 
 | 能力 | Claude Code | OpenCode | Codex | Cursor/Windsurf |
 |------|:-----------:|:--------:|:-----:|:---------------:|
@@ -162,13 +160,9 @@ cat ~/agent-workflow/rules/common/*.md > .github/copilot-instructions.md
 | Session hooks | ✅ | ❌ | ❌ | ❌ |
 | Rules 约束 | ✅ | ✅ | ✅ | ✅ |
 
----
+### 扩展指南
 
-## 扩展指南
-
-### 新增 Skill
-
-文件格式：
+#### 新增 Skill
 
 ```markdown
 ---
@@ -193,13 +187,11 @@ description: >
 | 语言/框架/基础设施 | `skills/languages/` |
 | 控制 agent 行为 | `skills/meta/` |
 
-### 新增 Rules
+#### 新增 Rules
 
 在 `rules/common/` 下创建 `.md` 文件。格式参考现有 rules（短而精炼，每条 20-50 行）。
 
-### 新增 Agent
-
-在 `agents/` 下创建 `.md`，格式：
+#### 新增 Agent
 
 ```markdown
 ---
@@ -210,6 +202,208 @@ model: sonnet
 ---
 
 [角色定义和指令]
+```
+
+---
+
+## English
+
+A general-purpose Agent Workflow Kit that codifies brainstorm → plan → execute → review discipline into reusable skills, enabling AI coding assistants to maintain consistent engineering standards across any project. **Java / Spring Boot is the first deeply-integrated language pack**; contributions for other languages are welcome. Combines the process discipline of [obra/superpowers](https://github.com/obra/superpowers) with proven elements of [everything-claude-code](https://github.com/affaan-m/everything-claude-code), maintained and extended independently going forward.
+
+### Directory Structure
+
+```
+agent-workflow/
+│
+├── skills/                                  # Skill library (18 skills)
+│   ├── workflow/                            # 🔄 Development workflow (4)
+│   │   ├── brainstorming/                   #   Design alignment (Q&A → spec → confirm)
+│   │   ├── writing-plans/                   #   Precise task breakdown
+│   │   ├── executing-plans/                 #   Batched execution + checkpoints (small plans)
+│   │   └── subagent-driven-development/     #   Independent subagent execution + dual-phase review (large plans)
+│   │
+│   ├── testing/                             # 🧪 Testing (2)
+│   │   ├── test-driven-development/         #   RED → GREEN → REFACTOR (Java/JUnit 5)
+│   │   └── java-testing/                    #   Java testing patterns
+│   │
+│   ├── debugging/                           # 🔍 Debugging & verification (2)
+│   │   ├── systematic-debugging/            #   4-phase root cause analysis
+│   │   └── verification-before-completion/  #   Must provide evidence before marking done
+│   │
+│   ├── collaboration/                       # 🤝 Collaboration & Git (3)
+│   │   ├── requesting-code-review/          #   Pre-review self-checklist
+│   │   ├── receiving-code-review/           #   Handling review feedback
+│   │   └── finishing-a-development-branch/  #   merge / PR / cleanup
+│   │
+│   ├── languages/                           # 💻 Languages & infrastructure (5)
+│   │   ├── springboot-patterns/             #   Spring Boot best practices
+│   │   ├── api-design/                      #   REST API design (Java examples)
+│   │   ├── database-migrations/             #   Database migrations (Flyway)
+│   │   ├── redis-patterns/                  #   Redis cache, locks, streams (Redisson)
+│   │   └── logging-standards/              #   Logging standards
+│   │
+│   └── meta/                                # ⚙️ Meta-skills (2)
+│       ├── using-superpowers/               #   THE RULE: mandatory skill check
+│       └── security-review/                 #   Security review process (Spring Boot)
+│
+├── rules/                                   # Hard constraints
+│   └── common/                              #   coding-style, git-workflow, security, testing,
+│                                            #   performance, patterns, agents, hooks, dev-workflow
+│
+├── agents/                                  # Dedicated subagents (6)
+│   ├── code-reviewer.md                     #   Code review
+│   ├── architect.md                         #   Architecture decisions
+│   ├── planner.md                           #   Task planning
+│   ├── tdd-guide.md                         #   TDD guidance
+│   ├── security-reviewer.md                 #   Security review
+│   └── build-error-resolver.md              #   Build error resolution
+│
+├── hooks/                                   # Session hooks
+├── docs/                                    # Platform docs & plans
+├── .claude-plugin/plugin.json               # Claude Code plugin manifest
+├── .opencode/                               # OpenCode integration
+├── .codex/                                  # Codex integration
+├── .cursor-plugin/                          # Cursor integration
+└── install.ps1                              # Windows install script (creates Junction)
+```
+
+### Core Workflow
+
+Driven by `skills/meta/using-superpowers/`:
+
+> **THE RULE**: If there's even a 1% chance a skill applies, the agent must check it first. Non-negotiable.
+
+```
+"Let's build X"
+  → workflow/brainstorming          Design Q&A → spec
+  → workflow/writing-plans          Break into tasks
+  → workflow/subagent-driven-development
+      ├─ Implementer subagent
+      ├─ Spec compliance review
+      └─ Code quality review
+  → testing/test-driven-development RED → GREEN → REFACTOR
+  → debugging/verification-before-completion  Provide evidence
+  → collaboration/finishing-a-development-branch
+
+"Fix this bug"
+  → debugging/systematic-debugging
+      Phase 1–4: logs → evidence → hypothesis → fix
+      ⚠ 3 failures → question the architecture
+```
+
+### Installation
+
+#### Claude Code (Recommended)
+
+> **Verified on: Windows 11.** Mac / Linux users please refer to the [Claude Code official docs](https://docs.anthropic.com/claude-code) for plugin installation instructions. PRs with install scripts for other platforms are welcome.
+
+**Windows (recommended — use the install script):**
+
+```powershell
+git clone <repo-url> D:/yourpath/agent-workflow
+cd D:/yourpath/agent-workflow
+.\install.ps1
+# Restart Claude Code to activate
+```
+
+The bundled `.claude/settings.json` is an **intentionally committed recommended permissions file** containing the `WebSearch`, `git *`, and other permissions required by the workflow. **Review it before installing** and remove any entries that don't fit your security policy.
+
+**Manual installation (Windows Junction):**
+
+```powershell
+git clone <repo-url> D:/yourpath/agent-workflow
+New-Item -ItemType Junction `
+  -Path "$env:USERPROFILE\.claude\plugins\marketplaces\local\plugins\agent-workflow" `
+  -Target "D:/yourpath/agent-workflow"
+# Restart Claude Code to activate
+```
+
+#### OpenCode
+
+```bash
+git clone <repo-url> ~/.config/opencode/agent-workflow
+mkdir -p ~/.config/opencode/skills
+
+ln -sfn ~/.config/opencode/agent-workflow/skills \
+        ~/.config/opencode/skills/agent-workflow
+# Restart OpenCode
+```
+
+#### Codex (OpenAI)
+
+```bash
+git clone <repo-url> ~/.codex/agent-workflow
+mkdir -p ~/.agents/skills
+ln -sfn ~/.codex/agent-workflow/skills ~/.agents/skills/agent-workflow
+# Restart Codex
+```
+
+#### Cursor / Windsurf
+
+```bash
+cd ~/your-project
+cat ~/agent-workflow/rules/common/*.md > .cursorrules
+cp .cursorrules .windsurfrules
+```
+
+#### GitHub Copilot
+
+```bash
+cat ~/agent-workflow/rules/common/*.md > .github/copilot-instructions.md
+```
+
+### Platform Capabilities
+
+| Feature | Claude Code | OpenCode | Codex | Cursor/Windsurf |
+|---------|:-----------:|:--------:|:-----:|:---------------:|
+| Skill auto-discovery | ✅ | ✅ | ✅ | ❌ |
+| Full workflow | ✅ | ⚠️ | ⚠️ | ❌ |
+| Subagent review | ✅ | ✅ | ⚠️ | ❌ |
+| Session hooks | ✅ | ❌ | ❌ | ❌ |
+| Rules enforcement | ✅ | ✅ | ✅ | ✅ |
+
+### Extension Guide
+
+#### Adding a Skill
+
+```markdown
+---
+name: my-skill
+description: >
+  Use when [trigger condition]. [What it does].
+---
+
+# Skill Title
+
+[Instructions]
+```
+
+Drop it in the appropriate directory for auto-discovery:
+
+| Type | Directory |
+|------|-----------|
+| Workflow | `skills/workflow/` |
+| Testing | `skills/testing/` |
+| Debugging | `skills/debugging/` |
+| Collaboration | `skills/collaboration/` |
+| Language / framework / infra | `skills/languages/` |
+| Agent behavior control | `skills/meta/` |
+
+#### Adding Rules
+
+Create a `.md` file under `rules/common/`. Follow the existing rules format — short and focused, 20–50 lines per rule.
+
+#### Adding an Agent
+
+```markdown
+---
+name: my-agent
+description: [when to use]
+tools: ["Read", "Grep", "Bash"]
+model: sonnet
+---
+
+[Role definition and instructions]
 ```
 
 ---
