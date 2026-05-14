@@ -6,13 +6,9 @@
 
 ## 架构
 
-quruhao-skills 通过两个机制与 OpenCode 集成：
+quruhao-skills 通过 Skills 机制与 OpenCode 集成：
 
-### 1. 插件（System Prompt 注入）
-
-`.opencode/plugins/quruhao-skills.js` 通过 `experimental.chat.system.transform` hook 在每次请求时将 `using-superpowers` 元技能注入 system prompt，确保 agent 在每次对话中都遵循 skill 检查纪律。
-
-### 2. Skills（原生 Skill Tool）
+### Skills（原生 Skill Tool）
 
 Skills 通过 symlink 映射到 `~/.config/opencode/skills/quruhao-skills/`，由 OpenCode 原生 skill tool 发现和加载。每个 skill 的 `SKILL.md` 包含 YAML frontmatter，OpenCode 据此判断何时激活。
 

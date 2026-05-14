@@ -104,7 +104,7 @@ cd D:/yourpath/quruhao-skills
 # 重启 Claude Code 生效
 ```
 
-项目内置 `.claude/settings.json` 包含推荐权限（`WebSearch`、`git *` 等）；如有需要可按个人安全策略删减其中条目。
+项目内置 `.claude/settings.json` 是**有意提交的推荐权限文件**，包含工作流所需的 `WebSearch`、`git *` 等权限。**安装前请审查该文件内容**，根据个人安全策略决定是否保留全部条目。
 
 **手动安装（Windows Junction）：**
 
@@ -120,10 +120,8 @@ New-Item -ItemType Junction `
 
 ```bash
 git clone <repo-url> ~/.config/opencode/quruhao-skills
-mkdir -p ~/.config/opencode/plugins ~/.config/opencode/skills
+mkdir -p ~/.config/opencode/skills
 
-ln -sf ~/.config/opencode/quruhao-skills/.opencode/plugins/quruhao-skills.js \
-       ~/.config/opencode/plugins/quruhao-skills.js
 ln -sfn ~/.config/opencode/quruhao-skills/skills \
         ~/.config/opencode/skills/quruhao-skills
 # 重启 OpenCode
