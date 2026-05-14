@@ -1,4 +1,4 @@
----
+﻿---
 name: writing-plans
 description: Use when you have a spec or requirements for a multi-step task, before touching code
 ---
@@ -318,9 +318,9 @@ Then identify the active tech stack from `01-requirements.md` and `02-design.md`
 
 | Tech Stack | Apply Skill |
 |------------|------------|
-| Java / Spring Boot | `quruhao-skills:springboot-patterns` |
-| Any backend | `quruhao-skills:api-design` (for API tasks) |
-| DB migrations | `quruhao-skills:database-migrations` |
+| Java / Spring Boot | `agent-workflow:springboot-patterns` |
+| Any backend | `agent-workflow:api-design` (for API tasks) |
+| DB migrations | `agent-workflow:database-migrations` |
 
 ## Traceability Rules (MANDATORY)
 
@@ -337,7 +337,7 @@ Every implementation plan (`03-implementation-plan.md`) starts with:
 ```markdown
 # [Feature Name] — Implementation Plan
 
-> **For Claude:** REQUIRED SUB-SKILL: Use quruhao-skills:executing-plans to implement this plan task-by-task.
+> **For Claude:** REQUIRED SUB-SKILL: Use agent-workflow:executing-plans to implement this plan task-by-task.
 
 **Requirements:** docs/plans/YYYY-MM-DD-<feature-name>/01-requirements.md
 **Design:** docs/plans/YYYY-MM-DD-<feature-name>/02-design.md
@@ -459,7 +459,7 @@ Step 5: Commit — format: type(scope): one-line English summary
 
 After saving or revising the plan, offer:
 
-1. **Subagent-Driven (this session)** - use `quruhao-skills:subagent-driven-development`
-2. **Parallel Session (separate)** - use `quruhao-skills:executing-plans`
+1. **Subagent-Driven (this session)** - use `agent-workflow:subagent-driven-development`
+2. **Parallel Session (separate)** - use `agent-workflow:executing-plans`
 
 Ask: "Which approach?"

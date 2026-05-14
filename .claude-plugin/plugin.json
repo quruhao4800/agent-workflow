@@ -1,7 +1,7 @@
 {
-  "name": "quruhao-skills",
+  "name": "agent-workflow",
   "version": "1.0.0",
-  "description": "quruhao-skills — AI development workflow with process discipline and language expertise",
+  "description": "agent-workflow — AI development workflow with process discipline and language expertise",
   "skills": [
     "./skills/workflow/brainstorming",
     "./skills/workflow/writing-plans",

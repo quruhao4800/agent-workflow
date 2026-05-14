@@ -1,4 +1,4 @@
-# quruhao-skills
+# agent-workflow
 
 通用 Agent Coding Workflow Kit——将 brainstorm → plan → execute → review 流程纪律固化为可复用 skill，让 AI 编码助手在任何项目中保持一致的工程规范。**Java / Spring Boot 是第一个深度适配的语言包**，其他语言欢迎社区贡献。综合了 [obra/superpowers](https://github.com/obra/superpowers) 的流程纪律和 [everything-claude-code](https://github.com/affaan-m/everything-claude-code) 的语言领域知识中**成熟可靠的部分**，后续独立维护和扩展。
 
@@ -7,7 +7,7 @@
 ## 目录结构
 
 ```
-quruhao-skills/
+agent-workflow/
 │
 ├── skills/                                  # Agent 技能库（18 个 skills）
 │   ├── workflow/                            # 🔄 开发流程（4）
@@ -98,8 +98,8 @@ quruhao-skills/
 **Windows（推荐使用安装脚本）：**
 
 ```powershell
-git clone <repo-url> D:/yourpath/quruhao-skills
-cd D:/yourpath/quruhao-skills
+git clone <repo-url> D:/yourpath/agent-workflow
+cd D:/yourpath/agent-workflow
 .\install.ps1
 # 重启 Claude Code 生效
 ```
@@ -109,30 +109,30 @@ cd D:/yourpath/quruhao-skills
 **手动安装（Windows Junction）：**
 
 ```powershell
-git clone <repo-url> D:/yourpath/quruhao-skills
+git clone <repo-url> D:/yourpath/agent-workflow
 New-Item -ItemType Junction `
-  -Path "$env:USERPROFILE\.claude\plugins\cache\local\quruhao-skills\1.0.0" `
-  -Target "D:/yourpath/quruhao-skills"
+  -Path "$env:USERPROFILE\.claude\plugins\cache\local\agent-workflow\1.0.0" `
+  -Target "D:/yourpath/agent-workflow"
 # 重启 Claude Code 生效
 ```
 
 ### OpenCode
 
 ```bash
-git clone <repo-url> ~/.config/opencode/quruhao-skills
+git clone <repo-url> ~/.config/opencode/agent-workflow
 mkdir -p ~/.config/opencode/skills
 
-ln -sfn ~/.config/opencode/quruhao-skills/skills \
-        ~/.config/opencode/skills/quruhao-skills
+ln -sfn ~/.config/opencode/agent-workflow/skills \
+        ~/.config/opencode/skills/agent-workflow
 # 重启 OpenCode
 ```
 
 ### Codex (OpenAI)
 
 ```bash
-git clone <repo-url> ~/.codex/quruhao-skills
+git clone <repo-url> ~/.codex/agent-workflow
 mkdir -p ~/.agents/skills
-ln -sfn ~/.codex/quruhao-skills/skills ~/.agents/skills/quruhao-skills
+ln -sfn ~/.codex/agent-workflow/skills ~/.agents/skills/agent-workflow
 # 重启 Codex
 ```
 
@@ -140,14 +140,14 @@ ln -sfn ~/.codex/quruhao-skills/skills ~/.agents/skills/quruhao-skills
 
 ```bash
 cd ~/your-project
-cat ~/quruhao-skills/rules/common/*.md > .cursorrules
+cat ~/agent-workflow/rules/common/*.md > .cursorrules
 cp .cursorrules .windsurfrules
 ```
 
 ### GitHub Copilot
 
 ```bash
-cat ~/quruhao-skills/rules/common/*.md > .github/copilot-instructions.md
+cat ~/agent-workflow/rules/common/*.md > .github/copilot-instructions.md
 ```
 
 ---
@@ -157,9 +157,9 @@ cat ~/quruhao-skills/rules/common/*.md > .github/copilot-instructions.md
 | 能力 | Claude Code | OpenCode | Codex | Cursor/Windsurf |
 |------|:-----------:|:--------:|:-----:|:---------------:|
 | Skill 自动发现 | ✅ | ✅ | ✅ | ❌ |
-| 完整 workflow | ✅ | ✅ | ⚠️ | ❌ |
+| 完整 workflow | ✅ | ⚠️ | ⚠️ | ❌ |
 | Subagent review | ✅ | ✅ | ⚠️ | ❌ |
-| Session hooks | ✅ | ✅ | ❌ | ❌ |
+| Session hooks | ✅ | ❌ | ❌ | ❌ |
 | Rules 约束 | ✅ | ✅ | ✅ | ✅ |
 
 ---

@@ -1,4 +1,4 @@
-# Agent Orchestration
+﻿# Agent Orchestration
 
 ## CRITICAL: Agents Are NOT Skills
 
@@ -6,35 +6,35 @@
 
 ```
 // WRONG — will fail with "Unknown skill"
-Skill(quruhao-skills:planner)
-Skill(quruhao-skills:architect)
-Skill(quruhao-skills:code-reviewer)
+Skill(agent-workflow:planner)
+Skill(agent-workflow:architect)
+Skill(agent-workflow:code-reviewer)
 
 // CORRECT
-Agent(subagent_type: "quruhao-skills:code-reviewer", ...)
-Agent(subagent_type: "quruhao-skills:tdd-guide", ...)
+Agent(subagent_type: "agent-workflow:code-reviewer", ...)
+Agent(subagent_type: "agent-workflow:tdd-guide", ...)
 ```
 
 ## Available Agents (Agent tool only)
 
 | subagent_type | Purpose | When to Use |
 |---------------|---------|-------------|
-| `quruhao-skills:planner` | Implementation planning | Complex features, multi-phase work |
-| `quruhao-skills:architect` | System design (Java / Spring Boot) | New module design, architectural decisions |
-| `quruhao-skills:tdd-guide` | TDD for Java / JUnit 5 | All new features and bug fixes |
-| `quruhao-skills:code-reviewer` | Java / Spring Boot code review | After writing or modifying any code |
-| `quruhao-skills:security-reviewer` | Security analysis | Before commits touching auth, payments, or sensitive data |
-| `quruhao-skills:build-error-resolver` | Java / Gradle build errors | When build or tests fail |
+| `agent-workflow:planner` | Implementation planning | Complex features, multi-phase work |
+| `agent-workflow:architect` | System design (Java / Spring Boot) | New module design, architectural decisions |
+| `agent-workflow:tdd-guide` | TDD for Java / JUnit 5 | All new features and bug fixes |
+| `agent-workflow:code-reviewer` | Java / Spring Boot code review | After writing or modifying any code |
+| `agent-workflow:security-reviewer` | Security analysis | Before commits touching auth, payments, or sensitive data |
+| `agent-workflow:build-error-resolver` | Java / Gradle build errors | When build or tests fail |
 
 ## When to Use Which Agent
 
 | Situation | Agent tool call |
 |-----------|----------------|
-| New feature or architectural decision | Agent(subagent_type: "quruhao-skills:planner") |
-| Writing new code or fixing a bug | Agent(subagent_type: "quruhao-skills:tdd-guide") |
-| After any code change | Agent(subagent_type: "quruhao-skills:code-reviewer") |
-| Build or test failure | Agent(subagent_type: "quruhao-skills:build-error-resolver") |
-| Touching auth, payment, or PII | Agent(subagent_type: "quruhao-skills:security-reviewer") |
+| New feature or architectural decision | Agent(subagent_type: "agent-workflow:planner") |
+| Writing new code or fixing a bug | Agent(subagent_type: "agent-workflow:tdd-guide") |
+| After any code change | Agent(subagent_type: "agent-workflow:code-reviewer") |
+| Build or test failure | Agent(subagent_type: "agent-workflow:build-error-resolver") |
+| Touching auth, payment, or PII | Agent(subagent_type: "agent-workflow:security-reviewer") |
 
 ## Parallel Execution
 
@@ -42,6 +42,6 @@ For independent tasks, launch agents in parallel — never sequentially when tas
 
 ```
 // Example: parallel review
-Agent(subagent_type: "quruhao-skills:security-reviewer", description: "Review auth changes")
-Agent(subagent_type: "quruhao-skills:code-reviewer", description: "Review service layer")
+Agent(subagent_type: "agent-workflow:security-reviewer", description: "Review auth changes")
+Agent(subagent_type: "agent-workflow:code-reviewer", description: "Review service layer")
 ```

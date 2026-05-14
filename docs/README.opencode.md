@@ -1,4 +1,4 @@
-# quruhao-skills — OpenCode 使用指南
+# agent-workflow — OpenCode 使用指南
 
 ## 安装
 
@@ -6,11 +6,11 @@
 
 ## 架构
 
-quruhao-skills 通过 Skills 机制与 OpenCode 集成：
+agent-workflow 通过 Skills 机制与 OpenCode 集成：
 
 ### Skills（原生 Skill Tool）
 
-Skills 通过 symlink 映射到 `~/.config/opencode/skills/quruhao-skills/`，由 OpenCode 原生 skill tool 发现和加载。每个 skill 的 `SKILL.md` 包含 YAML frontmatter，OpenCode 据此判断何时激活。
+Skills 通过 symlink 映射到 `~/.config/opencode/skills/agent-workflow/`，由 OpenCode 原生 skill tool 发现和加载。每个 skill 的 `SKILL.md` 包含 YAML frontmatter，OpenCode 据此判断何时激活。
 
 ### Tool 映射
 
@@ -29,10 +29,10 @@ Skills 中引用的 Claude Code 工具在 OpenCode 中的对应关系：
 
 ```
 ~/.config/opencode/skills/
-├── quruhao-skills/          → symlink 到 quruhao-skills/skills/
+├── agent-workflow/          → symlink 到 agent-workflow/skills/
 └── my-skills/        → 你的个人 skills
     └── my-skill/
         └── SKILL.md
 ```
 
-个人 skills 优先级高于 quruhao-skills skills。
+个人 skills 优先级高于 agent-workflow skills。

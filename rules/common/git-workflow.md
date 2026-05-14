@@ -1,4 +1,4 @@
-# Git Workflow
+﻿# Git Workflow
 
 ## Commit Message Format
 ```
@@ -31,11 +31,11 @@ git config core.hookspath
 **Prompt to user when hook is not configured:**
 
 > This project does not have a commit-msg hook configured.
-> The quruhao-skills repo provides one at `<quruhao-skills-path>/.githooks/commit-msg` that enforces conventional commit format.
+> The agent-workflow repo provides one at `<agent-workflow-path>/.githooks/commit-msg` that enforces conventional commit format.
 >
 > Options:
 > 1. Copy `.githooks/` into this project and run `git config core.hookspath .githooks`
-> 2. Point directly to the quruhao-skills hooks: `git config core.hookspath <quruhao-skills-path>/.githooks`
+> 2. Point directly to the agent-workflow hooks: `git config core.hookspath <agent-workflow-path>/.githooks`
 > 3. Skip — proceed without hook
 >
 > Which do you prefer?

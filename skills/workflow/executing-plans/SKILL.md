@@ -1,4 +1,4 @@
----
+﻿---
 name: executing-plans
 description: Use when you have a written implementation plan to execute in a separate session with review checkpoints
 ---
@@ -21,7 +21,7 @@ Read `03-implementation-plan.md`. Count tasks by status and estimate per-task fi
 | Condition | Decision |
 |-----------|----------|
 | Pending tasks ≤ 8 **AND** every task touches ≤ 5 files | ✅ Continue with `executing-plans` (this skill) |
-| Pending tasks > 8 **OR** any task touches > 5 files | 🔄 Switch to `quruhao-skills:subagent-driven-development` |
+| Pending tasks > 8 **OR** any task touches > 5 files | 🔄 Switch to `agent-workflow:subagent-driven-development` |
 
 Announce: `"Mode: executing-plans — N pending tasks, max M files per task."` or `"Switching to subagent-driven-development — reason: [N tasks / task X touches M files]."`
 
@@ -86,7 +86,7 @@ For each task:
 1. Check `Depends on` — all listed tasks must be `completed` before starting. If not, skip and report blocked.
 2. Mark task `in_progress`.
 3. Follow plan steps exactly based on task type:
-   - `code-task`: apply `quruhao-skills:test-driven-development` (write failing test → verify failure → implement → verify pass)
+   - `code-task`: apply `agent-workflow:test-driven-development` (write failing test → verify failure → implement → verify pass)
    - `migration-task`: write forward + rollback scripts, verify both
    - `config-task`: verify affected environments, document change
 4. Before marking complete, verify every DoD item from `03-implementation-plan.md`:
@@ -172,7 +172,7 @@ Before branch-finishing workflow:
 
 Then announce and invoke:
 
-- `quruhao-skills:finishing-a-development-branch`
+- `agent-workflow:finishing-a-development-branch`
 
 ## When To Stop And Ask For Help
 
@@ -185,5 +185,5 @@ Stop and escalate when:
 
 ## Integration
 
-- **REQUIRED:** `quruhao-skills:writing-plans`
-- **REQUIRED:** `quruhao-skills:finishing-a-development-branch`
+- **REQUIRED:** `agent-workflow:writing-plans`
+- **REQUIRED:** `agent-workflow:finishing-a-development-branch`

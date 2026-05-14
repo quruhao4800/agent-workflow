@@ -1,4 +1,4 @@
----
+﻿---
 name: finishing-a-development-branch
 description: Use when implementation is complete, all tests pass, and you need to decide how to integrate the work - guides completion of development work by presenting structured options for merge, PR, or cleanup
 ---
@@ -37,7 +37,7 @@ If any check fails, stop. Do not offer merge/PR/discard options.
 
 ## Step 3: Security Review (Conditional)
 
-If the implementation touches any of the following, invoke `quruhao-skills:security-review` before proceeding:
+If the implementation touches any of the following, invoke `agent-workflow:security-review` before proceeding:
 
 - API endpoints or HTTP handlers
 - Authentication / authorization logic
@@ -57,11 +57,11 @@ git config core.hookspath
 - If a path is returned and the hook file exists → proceed.
 - If not configured → stop and prompt the user:
 
-  > This project has no commit-msg hook. The quruhao-skills repo provides one that enforces conventional commit format.
+  > This project has no commit-msg hook. The agent-workflow repo provides one that enforces conventional commit format.
   >
   > Options:
   > 1. Copy `.githooks/` into this project and configure: `git config core.hookspath .githooks`
-  > 2. Point to quruhao-skills hooks directly: `git config core.hookspath <quruhao-skills-path>/.githooks`
+  > 2. Point to agent-workflow hooks directly: `git config core.hookspath <agent-workflow-path>/.githooks`
   > 3. Skip — proceed without hook
   >
   > Which do you prefer?
@@ -119,5 +119,5 @@ Never:
 
 Called by:
 
-- `quruhao-skills:subagent-driven-development`
-- `quruhao-skills:executing-plans`
+- `agent-workflow:subagent-driven-development`
+- `agent-workflow:executing-plans`

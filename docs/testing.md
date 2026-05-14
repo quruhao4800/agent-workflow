@@ -1,4 +1,4 @@
-# Testing quruhao-skills Skills
+﻿# Testing agent-workflow Skills
 
 This document describes how to test skills, particularly integration tests for complex skills like `subagent-driven-development`.
 
@@ -15,8 +15,8 @@ This document describes how to test skills, particularly integration tests for c
 For complex skills that invoke subagents:
 
 ```bash
-# Ensure you're in the quruhao-skills directory
-cd ~/quruhao-skills
+# Ensure you're in the agent-workflow directory
+cd ~/agent-workflow
 
 # For Claude Code:
 # 1. Install the plugin

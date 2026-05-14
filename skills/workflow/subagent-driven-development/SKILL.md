@@ -1,4 +1,4 @@
----
+﻿---
 name: subagent-driven-development
 description: Use when executing implementation plans with many tasks or large file impact. Also invoked automatically when executing-plans detects the plan exceeds its threshold (>8 tasks or any task touches >5 files).
 ---
@@ -102,7 +102,7 @@ Before final reviewer and branch-finishing:
 - `open_cr = 0`
 - `pending_recheck = 0`
 
-Then invoke `quruhao-skills:finishing-a-development-branch`.
+Then invoke `agent-workflow:finishing-a-development-branch`.
 
 ## Red Flags
 
@@ -116,7 +116,7 @@ Never:
 
 ## Integration
 
-- **REQUIRED:** `quruhao-skills:writing-plans`
-- **REQUIRED:** `quruhao-skills:requesting-code-review`
-- **REQUIRED:** `quruhao-skills:finishing-a-development-branch`
-- **Subagents should use:** `quruhao-skills:test-driven-development`
+- **REQUIRED:** `agent-workflow:writing-plans`
+- **REQUIRED:** `agent-workflow:requesting-code-review`
+- **REQUIRED:** `agent-workflow:finishing-a-development-branch`
+- **Subagents should use:** `agent-workflow:test-driven-development`

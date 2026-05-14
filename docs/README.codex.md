@@ -1,4 +1,4 @@
-# quruhao-skills — Codex (OpenAI) 使用指南
+# agent-workflow — Codex (OpenAI) 使用指南
 
 ## 安装
 
@@ -6,7 +6,7 @@
 
 ## 架构
 
-Codex 通过原生 skill discovery 机制与 quruhao-skills 集成：
+Codex 通过原生 skill discovery 机制与 agent-workflow 集成：
 
 ### Skill Discovery
 
@@ -31,7 +31,7 @@ description: Use when [condition] - [what it does]
 
 ```
 ~/.agents/skills/
-├── quruhao-skills/       → symlink 到 quruhao-skills/skills/
+├── agent-workflow/       → symlink 到 agent-workflow/skills/
 └── my-skill/
     └── SKILL.md
 ```

@@ -1,4 +1,4 @@
----
+﻿---
 name: brainstorming
 description: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores requirements and design before implementation."
 ---
@@ -359,7 +359,7 @@ Any addition after this point requires a CR-### entry in `05-change-log.md`.
 
 Then:
 - Commit `01-requirements.md` (and `05-change-log.md` if created).
-- Invoke `quruhao-skills:writing-plans` as the only next workflow skill, passing:
+- Invoke `agent-workflow:writing-plans` as the only next workflow skill, passing:
   - Feature folder path (`docs/plans/YYYY-MM-DD-<feature-name>/`)
   - Active `REQ-###` list and Scope Freeze Declaration
   - Tech stack and key constraints identified during brainstorming

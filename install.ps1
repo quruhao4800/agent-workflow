@@ -1,7 +1,7 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    Install quruhao-skills as a Claude Code plugin on Windows via Junction.
+    Install agent-workflow as a Claude Code plugin on Windows via Junction.
 .PARAMETER RepoPath
     Path to the cloned repo. Defaults to the directory containing this script.
 #>
@@ -9,7 +9,7 @@ param(
     [string]$RepoPath = $PSScriptRoot
 )
 
-$pluginName    = "quruhao-skills"
+$pluginName    = "agent-workflow"
 $pluginVersion = "1.0.0"
 $targetDir     = Join-Path $env:USERPROFILE ".claude\plugins\cache\local\$pluginName\$pluginVersion"
 
@@ -37,7 +37,7 @@ if (Test-Path $targetDir) {
 New-Item -ItemType Junction -Path $targetDir -Target $RepoPath | Out-Null
 
 Write-Host ""
-Write-Host "quruhao-skills installed successfully."
+Write-Host "agent-workflow installed successfully."
 Write-Host "  Junction : $targetDir"
 Write-Host "  -> Target: $RepoPath"
 Write-Host ""
