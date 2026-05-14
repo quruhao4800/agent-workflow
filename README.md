@@ -111,7 +111,7 @@ cd D:/yourpath/agent-workflow
 ```powershell
 git clone <repo-url> D:/yourpath/agent-workflow
 New-Item -ItemType Junction `
-  -Path "$env:USERPROFILE\.claude\plugins\cache\local\agent-workflow\1.0.0" `
+  -Path "$env:USERPROFILE\.claude\plugins\marketplaces\local\plugins\agent-workflow" `
   -Target "D:/yourpath/agent-workflow"
 # 重启 Claude Code 生效
 ```
