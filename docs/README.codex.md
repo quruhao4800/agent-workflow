@@ -31,7 +31,7 @@ description: Use when [condition] - [what it does]
 
 ```
 ~/.agents/skills/
-├── phoenix/       → symlink 到 quruhao-skills/skills/
+├── quruhao-skills/       → symlink 到 quruhao-skills/skills/
 └── my-skill/
     └── SKILL.md
 ```

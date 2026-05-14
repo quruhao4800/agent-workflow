@@ -6,7 +6,7 @@ git clone <repo-url> ~/.codex/quruhao-skills
 
 # 2. 创建 skills symlink
 mkdir -p ~/.agents/skills
-ln -sfn ~/.codex/quruhao-skills/skills ~/.agents/skills/phoenix
+ln -sfn ~/.codex/quruhao-skills/skills ~/.agents/skills/quruhao-skills
 
 # 3. 重启 Codex
 ```
@@ -16,7 +16,7 @@ ln -sfn ~/.codex/quruhao-skills/skills ~/.agents/skills/phoenix
 ```powershell
 git clone <repo-url> "$env:USERPROFILE\.codex\quruhao-skills"
 New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.agents\skills"
-cmd /c mklink /J "$env:USERPROFILE\.agents\skills\phoenix" `
+cmd /c mklink /J "$env:USERPROFILE\.agents\skills\quruhao-skills" `
   "$env:USERPROFILE\.codex\quruhao-skills\skills"
 ```
 
@@ -37,6 +37,6 @@ cd ~/.codex/quruhao-skills && git pull
 ## 卸载
 
 ```bash
-rm -f ~/.agents/skills/phoenix
+rm -f ~/.agents/skills/quruhao-skills
 rm -rf ~/.codex/quruhao-skills
 ```

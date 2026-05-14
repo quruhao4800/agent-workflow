@@ -22,9 +22,15 @@ if (-not (Test-Path $parentDir)) {
     New-Item -ItemType Directory -Force -Path $parentDir | Out-Null
 }
 
-# Remove existing link/directory
+# Remove existing junction (abort if it's a real directory to avoid data loss)
 if (Test-Path $targetDir) {
-    Remove-Item $targetDir -Force -Recurse
+    $existing = Get-Item $targetDir -Force
+    if ($existing.LinkType -eq 'Junction') {
+        Remove-Item $targetDir -Force
+    } else {
+        Write-Error "Path '$targetDir' exists and is not a Junction. Remove it manually before re-running."
+        exit 1
+    }
 }
 
 # Create junction
