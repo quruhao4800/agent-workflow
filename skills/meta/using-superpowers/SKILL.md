@@ -13,7 +13,7 @@ This is not negotiable. This is not optional. You cannot rationalize your way ou
 
 ## How to Access Skills
 
-**In Claude Code:** Use the `Skill` tool. When you invoke a skill, its content is loaded and presented to you鈥攆ollow it directly. Never use the Read tool on skill files.
+**In Claude Code:** Use the `Skill` tool. When you invoke a skill, its content is loaded and presented to you — follow it directly. Never use the Read tool on skill files.
 
 **In other environments:** Check your platform's documentation for how skills are loaded.
 
@@ -55,7 +55,7 @@ digraph skill_flow {
 
 ## Red Flags
 
-These thoughts mean STOP鈥攜ou're rationalizing:
+These thoughts mean STOP — you're rationalizing:
 
 | Thought | Reality |
 |---------|---------|
@@ -70,7 +70,7 @@ These thoughts mean STOP鈥攜ou're rationalizing:
 | "The skill is overkill" | Simple things become complex. Use it. |
 | "I'll just do this one thing first" | Check BEFORE doing anything. |
 | "This feels productive" | Undisciplined action wastes time. Skills prevent this. |
-| "I know what that means" | Knowing the concept 鈮?using the skill. Invoke it. |
+| "I know what that means" | Knowing the concept ≠ using the skill. Invoke it. |
 
 ## Skill Priority
 
@@ -79,8 +79,8 @@ When multiple skills could apply, use this order:
 1. **Process skills first** (brainstorming, debugging) - these determine HOW to approach the task
 2. **Implementation skills second** (frontend-design, mcp-builder) - these guide execution
 
-"Let's build X" 鈫?brainstorming first, then implementation skills.
-"Fix this bug" 鈫?debugging first, then domain-specific skills.
+"Let's build X" →brainstorming first, then implementation skills.
+"Fix this bug" →debugging first, then domain-specific skills.
 
 ## Skill Types
 

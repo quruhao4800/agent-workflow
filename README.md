@@ -53,13 +53,12 @@ quruhao-skills/
 │   └── build-error-resolver.md              #   构建错误修复
 │
 ├── hooks/                                   # 会话钩子
-├── lib/                                     # 工具函数（skill 发现和加载）
 ├── docs/                                    # 平台文档与计划
 ├── .claude-plugin/plugin.json               # Claude Code 插件清单
 ├── .opencode/                               # OpenCode 适配
 ├── .codex/                                  # Codex 适配
 ├── .cursor-plugin/                          # Cursor 适配
-└── install.sh                               # 团队成员安装脚本
+└── install.ps1                              # Windows 安装脚本（创建 Junction）
 ```
 
 ---
@@ -94,16 +93,25 @@ quruhao-skills/
 
 ### Claude Code（推荐）
 
-```bash
-git clone <repo-url> D:/yourpath/quruhao-skills
-# 在 Claude Code 中:
-/plugin install --path D:/yourpath/quruhao-skills
-```
+> **已验证平台：Windows 11。** Mac / Linux 用户请参考 [Claude Code 官方文档](https://docs.anthropic.com/claude-code) 中的插件安装说明，欢迎 PR 贡献其他平台的安装脚本。
 
-或直接通过目录链接读取（Windows Junction）：
+**Windows（推荐使用安装脚本）：**
 
 ```powershell
-# 修改 ~/.claude/plugins/installed_plugins.json 中 installPath 指向项目目录
+git clone <repo-url> D:/yourpath/quruhao-skills
+cd D:/yourpath/quruhao-skills
+.\install.ps1
+# 重启 Claude Code 生效
+```
+
+**手动安装（Windows Junction）：**
+
+```powershell
+git clone <repo-url> D:/yourpath/quruhao-skills
+New-Item -ItemType Junction `
+  -Path "$env:USERPROFILE\.claude\plugins\cache\local\quruhao-skills\1.0.0" `
+  -Target "D:/yourpath/quruhao-skills"
+# 重启 Claude Code 生效
 ```
 
 ### OpenCode
