@@ -129,11 +129,11 @@ ln -sfn ~/.config/opencode/agent-workflow/skills \
 
 #### Codex (OpenAI)
 
+Codex 无原生 skill 发现机制，通过 `AGENTS.md` 注入 rules：
+
 ```bash
-git clone <repo-url> ~/.codex/agent-workflow
-mkdir -p ~/.agents/skills
-ln -sfn ~/.codex/agent-workflow/skills ~/.agents/skills/agent-workflow
-# 重启 Codex
+cd ~/your-project
+cat ~/agent-workflow/rules/common/*.md > AGENTS.md
 ```
 
 #### Cursor / Windsurf
@@ -154,9 +154,9 @@ cat ~/agent-workflow/rules/common/*.md > .github/copilot-instructions.md
 
 | 能力 | Claude Code | OpenCode | Codex | Cursor/Windsurf |
 |------|:-----------:|:--------:|:-----:|:---------------:|
-| Skill 自动发现 | ✅ | ✅ | ✅ | ❌ |
-| 完整 workflow | ✅ | ⚠️ | ⚠️ | ❌ |
-| Subagent review | ✅ | ✅ | ⚠️ | ❌ |
+| Skill 自动发现 | ✅ | ✅ | ❌ | ❌ |
+| 完整 workflow | ✅ | ⚠️ | ❌ | ❌ |
+| Subagent review | ✅ | ✅ | ❌ | ❌ |
 | Session hooks | ✅ | ❌ | ❌ | ❌ |
 | Rules 约束 | ✅ | ✅ | ✅ | ✅ |
 
@@ -331,11 +331,11 @@ ln -sfn ~/.config/opencode/agent-workflow/skills \
 
 #### Codex (OpenAI)
 
+Codex has no native skill discovery. Inject rules via `AGENTS.md`:
+
 ```bash
-git clone <repo-url> ~/.codex/agent-workflow
-mkdir -p ~/.agents/skills
-ln -sfn ~/.codex/agent-workflow/skills ~/.agents/skills/agent-workflow
-# Restart Codex
+cd ~/your-project
+cat ~/agent-workflow/rules/common/*.md > AGENTS.md
 ```
 
 #### Cursor / Windsurf
@@ -356,9 +356,9 @@ cat ~/agent-workflow/rules/common/*.md > .github/copilot-instructions.md
 
 | Feature | Claude Code | OpenCode | Codex | Cursor/Windsurf |
 |---------|:-----------:|:--------:|:-----:|:---------------:|
-| Skill auto-discovery | ✅ | ✅ | ✅ | ❌ |
-| Full workflow | ✅ | ⚠️ | ⚠️ | ❌ |
-| Subagent review | ✅ | ✅ | ⚠️ | ❌ |
+| Skill auto-discovery | ✅ | ✅ | ❌ | ❌ |
+| Full workflow | ✅ | ⚠️ | ❌ | ❌ |
+| Subagent review | ✅ | ✅ | ❌ | ❌ |
 | Session hooks | ✅ | ❌ | ❌ | ❌ |
 | Rules enforcement | ✅ | ✅ | ✅ | ✅ |
 

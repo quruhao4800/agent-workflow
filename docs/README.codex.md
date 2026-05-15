@@ -6,32 +6,34 @@
 
 ## 架构
 
-Codex 通过原生 skill discovery 机制与 agent-workflow 集成：
+Codex 没有原生 skill 发现机制（无 `~/.agents/skills/` 扫描），通过 `AGENTS.md` 注入 rules 内容与 agent-workflow 集成。
 
-### Skill Discovery
+### 接入方式
 
-Codex 启动时扫描 `~/.agents/skills/` 目录，解析每个 `SKILL.md` 的 YAML frontmatter：
+将 `rules/common/` 下的所有规则合并到项目根目录的 `AGENTS.md`：
 
-```yaml
----
-name: my-skill
-description: Use when [condition] - [what it does]
----
+```bash
+cat ~/agent-workflow/rules/common/*.md > AGENTS.md
 ```
 
-`description` 字段决定 Codex 何时自动激活该 skill。`using-superpowers` skill 自动发现后强制所有 skill 使用纪律。
+Codex 启动时读取该文件，将其作为 agent 的系统指令。
 
 ### 限制
 
-- Codex 没有 hooks 系统，`using-superpowers` 通过 skill discovery 自动加载（而非 session hook）
-- Subagent 支持有限，`subagent-driven-development` 的双阶段 review 可能无法完整执行
-- 没有斜杠命令系统，`commands/` 目录不会被加载
+| 能力 | 支持 |
+|------|:----:|
+| Rules 约束 | ✅ |
+| Skill 自动发现 | ❌ |
+| 完整 workflow | ❌ |
+| Subagent review | ❌ |
+| Session hooks | ❌ |
 
-### 自定义 Skills
+### 自定义
 
-```
-~/.agents/skills/
-├── agent-workflow/       → symlink 到 agent-workflow/skills/
-└── my-skill/
-    └── SKILL.md
+如需将特定 skill 内容也注入进去，可手动追加：
+
+```bash
+cat ~/agent-workflow/rules/common/*.md \
+    ~/agent-workflow/skills/debugging/systematic-debugging/SKILL.md \
+    > AGENTS.md
 ```
