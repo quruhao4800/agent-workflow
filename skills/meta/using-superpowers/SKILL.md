@@ -82,6 +82,106 @@ When multiple skills could apply, use this order:
 "Let's build X" →brainstorming first, then implementation skills.
 "Fix this bug" →debugging first, then domain-specific skills.
 
+## Task Complexity Assessment (MANDATORY — before skill routing)
+
+Before routing to skills, assess whether the task is a simple or complex requirement.
+
+### Assessment Dimensions
+
+| Dimension | Simple | Complex |
+|-----------|--------|---------|
+| Requirement description | Self-contained, no ambiguity, no design decisions needed | Involves design choices, unclear scope, or cross-component alignment |
+| Change scope | Single file or single concern | Multiple files or cross-component |
+| Impact | Local — no interface, contract, or data model changes | Affects interfaces, data models, other components, or external callers |
+
+**All three Simple** → propose Lightweight Track.
+**Any one Complex** → proceed with full skill workflow (brainstorming → writing-plans → executing-plans).
+
+### Assessment Presentation Format
+
+Present to the user before proceeding:
+
+```
+Task Assessment:
+- Requirement: [one-line summary]
+- Scope: [file(s) or area]
+- Impact: local / cross-component
+- Dimensions: [Simple/Complex] × [Simple/Complex] × [Simple/Complex]
+
+Proposed track: Lightweight / Full workflow
+Confirm? (or correct if wrong)
+```
+
+Wait for user confirmation. User may override the assessment in either direction.
+
+### Lightweight Track
+
+Execute in order after user confirms simple requirement:
+
+**Step 1 — Understand Requirement**
+
+Restate the requirement in your own words. Ask: "Is this understanding correct?"
+Wait for confirmation before proceeding.
+
+**Step 2 — Create Lightweight Plans**
+
+Create `docs/plans/YYYY-MM-DD-<feature-name>/` with two files:
+
+`02-design.md`:
+```markdown
+---
+type: simple-requirement
+track: lightweight
+---
+
+> **[Simple Requirement]** 本文件由轻量路径生成，非完整技术设计文档。
+
+## Requirement
+<!-- 做什么，为什么 -->
+
+## Changes
+<!-- 改哪里，怎么改 -->
+```
+
+`97-risk-map.md`:
+```markdown
+---
+type: simple-requirement
+track: lightweight
+---
+
+> **[Simple Requirement]** 本文件由轻量路径生成。
+
+## Known Risks
+<!-- 已知风险或假设，无则填 none -->
+```
+
+**Step 3 — Pre-Modification Gate**
+
+Present exactly what files and lines will change. Wait for confirmation per the Pre-Modification Gate rules below.
+
+**Step 4 — TDD**
+
+Apply `agent-workflow:test-driven-development` — write failing test first, then implement.
+
+**Step 5 — Commit**
+
+Use conventional commit format. Message MUST include requirement context (why), not only what changed:
+
+```
+fix(scope): add null check for userId parameter
+
+Prevents NullPointerException when userId is absent from request
+context, discovered in staging environment.
+```
+
+**Step 6 — Standards-based Code Review**
+
+Invoke `agent-workflow:requesting-code-review`. Code reviewer finds `02-design.md`
+with `type: simple-requirement` and applies Spec-based review against the lightweight design.
+
+---
+
 ## Skill Types
 
 **Rigid** (TDD, debugging): Follow exactly. Don't adapt away discipline.
