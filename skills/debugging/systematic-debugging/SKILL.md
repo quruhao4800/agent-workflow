@@ -1,4 +1,4 @@
-﻿---
+---
 name: systematic-debugging
 description: Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes
 ---
@@ -43,9 +43,52 @@ Use for ANY technical issue:
 - You're in a hurry (rushing guarantees rework)
 - Manager wants it fixed NOW (systematic is faster than thrashing)
 
-## The Four Phases
+## The Five Phases
 
 You MUST complete each phase before proceeding to the next.
+
+### Phase 0: Feature Context Linking
+
+**Before any investigation, establish where this bug came from.**
+
+1. **Identify affected files**
+   - From the error, stack trace, or reproduction steps, list the files most likely involved.
+
+2. **Trace to originating feature via git**
+   ```bash
+   # Find the commits that last touched the affected files
+   git log --oneline -10 -- <file-path>
+
+   # If a specific line is implicated
+   git blame <file-path>
+   ```
+   Extract: commit hash, commit message, date, branch name if visible.
+
+3. **Present findings to developer**
+
+   Report in this format:
+   ```
+   Feature Context:
+   - Affected file(s): <paths>
+   - Last modified: <date> by commit <hash>
+   - Commit message: <message>
+   - Likely originating feature: <inferred name>
+   - docs/plans/ folder found: yes / no
+     → <path if yes>
+   - 97-risk-map.md found: yes / no
+   ```
+
+   Then ask: **"Does this match the feature you expect? Please confirm or correct."**
+
+4. **Developer confirms or corrects** — update the feature name / plan path if corrected.
+
+5. **If `97-risk-map.md` exists**, read it now.
+   - Note any entries that describe the failing scenario.
+   - A match means the risk was known but not resolved — flag this explicitly in Phase 5.
+
+6. **If no `docs/plans/` folder exists**, proceed without it. Record this gap in Phase 5.
+
+---
 
 ### Phase 1: Root Cause Investigation
 
@@ -212,6 +255,58 @@ You MUST complete each phase before proceeding to the next.
 
    This is NOT a failed hypothesis - this is a wrong architecture.
 
+### Phase 5: Bug Retrospective
+
+**After fix is verified (all tests pass), write the retrospective. This is mandatory.**
+
+1. **Classify the bug**
+
+   | Category | Description |
+   |----------|-------------|
+   | `missing-boundary-check` | Null, empty, overflow, range not handled |
+   | `business-logic-gap` | Rule or condition missing from implementation |
+   | `integration-contract` | Mismatched assumptions between components/services |
+   | `state-management` | Incorrect state mutation, race condition, stale data |
+   | `config-error` | Wrong value, missing env var, environment mismatch |
+   | `security` | Auth gap, injection, data exposure |
+   | `concurrency` | Thread safety, deadlock, lost update |
+   | `other` | Describe explicitly |
+
+2. **Identify workflow gap**
+
+   Which phase should have caught this?
+
+   | Workflow Phase | Examples of what it should catch |
+   |----------------|----------------------------------|
+   | `brainstorming` | Design-level assumption, missing requirement |
+   | `tdd-red-phase` | Untested scenario, missing test case |
+   | `code-review` | Logic error visible in diff |
+   | `security-review` | Auth or injection issue |
+   | `api-design` | Contract mismatch between caller and provider |
+   | `database-migration` | Schema gap, missing constraint |
+   | `97-risk-map` | Risk was known but not acted on |
+
+3. **Check against 97-risk-map.md**
+   - Was this scenario listed? → `anticipated: yes / no`
+   - If `yes`: the risk was known but not resolved — the gap is in follow-through, not in visibility.
+   - If `no`: the gap is in risk identification during development.
+
+4. **Append entry to `docs/memory/bug-retrospective.md`** (create file if absent)
+
+   ```markdown
+   | Date | Feature | Bug Summary | Category | Workflow Gap | Anticipated in risk-map | Skill Update Needed |
+   |------|---------|-------------|----------|--------------|------------------------|---------------------|
+   | YYYY-MM-DD | <feature-name> | <one-line description> | <category> | <workflow phase> | yes / no | <skill name or "none"> |
+   ```
+
+5. **If `Skill Update Needed` is not "none"**, add a comment line below the table entry:
+   ```
+   → Proposed addition to <skill>: <one-sentence description of what the skill should enforce>
+   ```
+   This becomes the input for periodic skill evolution reviews.
+
+---
+
 ## Red Flags - STOP and Follow Process
 
 If you catch yourself thinking:
@@ -259,10 +354,12 @@ If you catch yourself thinking:
 
 | Phase | Key Activities | Success Criteria |
 |-------|---------------|------------------|
+| **0. Context Linking** | git log/blame, identify feature, read 97-risk-map | Developer confirms feature; risk-map loaded if exists |
 | **1. Root Cause** | Read errors, reproduce, check changes, gather evidence | Understand WHAT and WHY |
 | **2. Pattern** | Find working examples, compare | Identify differences |
 | **3. Hypothesis** | Form theory, test minimally | Confirmed or new hypothesis |
 | **4. Implementation** | Create test, fix, verify | Bug resolved, tests pass |
+| **5. Retrospective** | Classify bug, identify workflow gap, write bug-retrospective.md | Entry written; skill update proposed if gap found |
 
 ## When Process Reveals "No Root Cause"
 

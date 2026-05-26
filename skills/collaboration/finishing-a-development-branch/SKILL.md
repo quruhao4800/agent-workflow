@@ -1,4 +1,4 @@
-﻿---
+---
 name: finishing-a-development-branch
 description: Use when implementation is complete, all tests pass, and you need to decide how to integrate the work - guides completion of development work by presenting structured options for merge, PR, or cleanup
 ---
@@ -35,7 +35,35 @@ Confirm from plan artifacts:
 
 If any check fails, stop. Do not offer merge/PR/discard options.
 
-## Step 3: Security Review (Conditional)
+## Step 3: Write Risk Map
+
+Write `docs/plans/YYYY-MM-DD-<feature-name>/97-risk-map.md` (create the file; skip if no plan folder exists for this work).
+
+Template:
+
+```markdown
+# Risk Map: <feature-name>
+
+## Untested Scenarios
+<!-- Edge cases and boundary conditions not covered by tests -->
+-
+
+## Implementation Assumptions
+<!-- Things assumed to be true that were not verified -->
+-
+
+## Fragile Areas
+<!-- Components or interactions that were tricky to implement or felt unstable -->
+-
+
+## Intentionally Deferred
+<!-- What was consciously left out of scope -->
+-
+```
+
+Fill each section honestly. Empty sections are allowed but must be left blank intentionally, not skipped.
+
+## Step 4: Security Review (Conditional)
 
 If the implementation touches any of the following, invoke `agent-workflow:security-review` before proceeding:
 
@@ -47,7 +75,7 @@ If the implementation touches any of the following, invoke `agent-workflow:secur
 
 If none of the above apply, skip this step.
 
-## Step 4: Verify Commit-msg Hook
+## Step 5: Verify Commit-msg Hook
 
 Run:
 ```bash
@@ -68,11 +96,11 @@ git config core.hookspath
 
   Execute the user's choice before continuing. If option 3, still enforce single-line conventional commit format manually.
 
-## Step 5: Determine Base Branch
+## Step 6: Determine Base Branch
 
 Find base (`main`/`master`) via `git merge-base` and confirm if needed.
 
-## Step 6: Present Options
+## Step 7: Present Options
 
 Present exactly:
 
@@ -81,7 +109,7 @@ Present exactly:
 3. Keep the branch as-is (handle later)
 4. Discard this work
 
-## Step 7: Execute Choice
+## Step 8: Execute Choice
 
 ### Option 1: Merge Locally
 
