@@ -1,4 +1,4 @@
-﻿---
+---
 name: subagent-driven-development
 description: Use when executing implementation plans with many tasks or large file impact. Also invoked automatically when executing-plans detects the plan exceeds its threshold (>8 tasks or any task touches >5 files).
 ---
